@@ -1,0 +1,26 @@
+html,body,#app,.el-container,.el-header,.el-footer,.el-aside,.el-main{
+  /*设置内部填充为0，几个布局元素之间没有间距*/
+  padding: 0px;
+  /*外部间距也是如此设置*/
+  margin: 0px;
+  /*统一设置高度为100%*/
+  height: 100%;
+}
+.el-header {
+  background: aliceblue;
+}
+.el-aside {
+  background: antiquewhite;
+  width: 10vw !important;
+  min-width: 80px !important;
+}
+.el-main {
+  background: aquamarine;
+
+  width: 90vw !important;
+
+}
+.el-footer {
+  background: blueviolet;
+  height: 7vh !important;
+}
