@@ -11,7 +11,7 @@
  Target Server Version : 80026
  File Encoding         : 65001
 
- Date: 21/12/2021 18:49:53
+ Date: 22/12/2021 15:28:34
 */
 
 SET NAMES utf8mb4;
@@ -22,7 +22,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `address`;
 CREATE TABLE `address`  (
-  `user_id` int(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+  `user_id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_address` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`user_id`) USING BTREE,
   CONSTRAINT `address_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -37,7 +37,7 @@ CREATE TABLE `address`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `good`;
 CREATE TABLE `good`  (
-  `good_id` int(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+  `good_id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `good_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `good_weight` double UNSIGNED NOT NULL,
   `good_state` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -49,6 +49,8 @@ CREATE TABLE `good`  (
 -- ----------------------------
 -- Records of good
 -- ----------------------------
+INSERT INTO `good` VALUES (7, 'k380', 120, '待发货', '广州', '深圳');
+INSERT INTO `good` VALUES (8, 'ipad', 250, '已发货', '广州', '杭州');
 
 -- ----------------------------
 -- Table structure for order
@@ -66,6 +68,8 @@ CREATE TABLE `order`  (
 -- ----------------------------
 -- Records of order
 -- ----------------------------
+INSERT INTO `order` VALUES (2, 1, 7);
+INSERT INTO `order` VALUES (1, 2, 8);
 
 -- ----------------------------
 -- Table structure for track
@@ -88,7 +92,7 @@ CREATE TABLE `track`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`  (
-  `user_id` int(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+  `user_id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'sb',
   `user_password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '1234',
   `user_gender` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -98,5 +102,7 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
+INSERT INTO `user` VALUES (1, 'dzq', 'aaaaaaaa66', '男');
+INSERT INTO `user` VALUES (2, 'sb', '123456', '男');
 
 SET FOREIGN_KEY_CHECKS = 1;
