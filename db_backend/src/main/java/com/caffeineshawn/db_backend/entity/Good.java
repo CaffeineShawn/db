@@ -3,10 +3,10 @@ package com.caffeineshawn.db_backend.entity;
 public class Good {
     private int good_id;
     private String good_name;
-    private float good_weight;
+    private double good_weight;
     private String good_state;
-    private String destination;
-    private String origin;
+    private String good_destination;
+    private String good_origin;
 
     public int getGood_id() {
         return good_id;
@@ -24,11 +24,11 @@ public class Good {
         this.good_name = good_name;
     }
 
-    public float getGood_weight() {
+    public double getGood_weight() {
         return good_weight;
     }
 
-    public void setGood_weight(float good_weight) {
+    public void setGood_weight(double good_weight) {
         this.good_weight = good_weight;
     }
 
@@ -40,20 +40,20 @@ public class Good {
         this.good_state = good_state;
     }
 
-    public String getDestination() {
-        return destination;
+    public String getGood_destination() {
+        return good_destination;
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
+    public void setGood_destination(String good_destination) {
+        this.good_destination = good_destination;
     }
 
-    public String getOrigin() {
-        return origin;
+    public String getGood_origin() {
+        return good_origin;
     }
 
-    public void setOrigin(String origin) {
-        this.origin = origin;
+    public void setGood_origin(String good_origin) {
+        this.good_origin = good_origin;
     }
 
     @Override
@@ -63,8 +63,8 @@ public class Good {
                 ", good_name='" + good_name + '\'' +
                 ", good_weight=" + good_weight +
                 ", good_state='" + good_state + '\'' +
-                ", destination='" + destination + '\'' +
-                ", origin='" + origin + '\'' +
+                ", good_destination='" + good_destination + '\'' +
+                ", good_origin='" + good_origin + '\'' +
                 '}';
     }
 }

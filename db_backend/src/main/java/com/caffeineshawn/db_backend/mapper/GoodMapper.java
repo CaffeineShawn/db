@@ -1,0 +1,10 @@
+package com.caffeineshawn.db_backend.mapper;
+
+import com.caffeineshawn.db_backend.entity.Good;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface GoodMapper {
+
+    int addGood(Good good);
+}

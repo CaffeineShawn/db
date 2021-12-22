@@ -1,24 +1,24 @@
 package com.caffeineshawn.db_backend.entity;
 
 public class Order {
-    private String consignor;
-    private String consignee;
+    private int consignor_id;
+    private int consignee_id;
     private int good_id;
 
-    public String getConsignor() {
-        return consignor;
+    public int getConsignor_id() {
+        return consignor_id;
     }
 
-    public void setConsignor(String consignor) {
-        this.consignor = consignor;
+    public void setConsignor_id(int consignor_id) {
+        this.consignor_id = consignor_id;
     }
 
-    public String getConsignee() {
-        return consignee;
+    public int getConsignee_id() {
+        return consignee_id;
     }
 
-    public void setConsignee(String consignee) {
-        this.consignee = consignee;
+    public void setConsignee_id(int consignee_id) {
+        this.consignee_id = consignee_id;
     }
 
     public int getGood_id() {
@@ -32,9 +32,10 @@ public class Order {
     @Override
     public String toString() {
         return "Order{" +
-                "consignor='" + consignor + '\'' +
-                ", consignee='" + consignee + '\'' +
+                "consignor_id=" + consignor_id +
+                ", consignee_id=" + consignee_id +
                 ", good_id=" + good_id +
                 '}';
     }
 }
+
