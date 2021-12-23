@@ -11,7 +11,7 @@
  Target Server Version : 80026
  File Encoding         : 65001
 
- Date: 23/12/2021 17:10:08
+ Date: 23/12/2021 23:23:49
 */
 
 SET NAMES utf8mb4;
@@ -50,8 +50,9 @@ CREATE TABLE `good`  (
 -- ----------------------------
 -- Records of good
 -- ----------------------------
-INSERT INTO `good` VALUES (7, 'k380', 120.00, '待发货', '广州', '深圳', 120.00);
-INSERT INTO `good` VALUES (8, 'ipad', 250.00, '已发货', '广州', '杭州', 3560.00);
+INSERT INTO `good` VALUES (7, 'k380', 0.10, '待发货', '广州', '深圳', 120.00);
+INSERT INTO `good` VALUES (8, 'ipad', 0.78, '已发货', '广州', '杭州', 3560.00);
+INSERT INTO `good` VALUES (9, 'aa', 1.00, '在路上', '北京', '深圳', 465.00);
 
 -- ----------------------------
 -- Table structure for order
@@ -61,7 +62,6 @@ CREATE TABLE `order`  (
   `consignor_id` int UNSIGNED NOT NULL,
   `consignee_id` int UNSIGNED NOT NULL,
   `good_id` int UNSIGNED NOT NULL,
-  `order_price` double(10, 2) NOT NULL,
   PRIMARY KEY (`consignor_id`, `good_id`, `consignee_id`) USING BTREE,
   INDEX `good_id`(`good_id`) USING BTREE,
   CONSTRAINT `order_ibfk_1` FOREIGN KEY (`good_id`) REFERENCES `good` (`good_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -70,8 +70,9 @@ CREATE TABLE `order`  (
 -- ----------------------------
 -- Records of order
 -- ----------------------------
-INSERT INTO `order` VALUES (1, 2, 8, 10.00);
-INSERT INTO `order` VALUES (2, 1, 7, 0.00);
+INSERT INTO `order` VALUES (2, 1, 7);
+INSERT INTO `order` VALUES (1, 2, 8);
+INSERT INTO `order` VALUES (1, 3, 9);
 
 -- ----------------------------
 -- Table structure for track

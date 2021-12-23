@@ -1,9 +1,11 @@
 package com.caffeineshawn.db_backend.entity;
 
+import java.sql.Timestamp;
+
 public class Track {
     private int good_id;
     private String current_location;
-    private String current_time;
+    private Timestamp current_time;
 
     public int getGood_id() {
         return good_id;
@@ -21,11 +23,11 @@ public class Track {
         this.current_location = current_location;
     }
 
-    public String getCurrent_time() {
+    public Timestamp getCurrent_time() {
         return current_time;
     }
 
-    public void setCurrent_time(String current_time) {
+    public void setCurrent_time(Timestamp current_time) {
         this.current_time = current_time;
     }
 
@@ -34,7 +36,7 @@ public class Track {
         return "Track{" +
                 "good_id=" + good_id +
                 ", current_location='" + current_location + '\'' +
-                ", current_time='" + current_time + '\'' +
+                ", current_time=" + current_time +
                 '}';
     }
 }

@@ -4,22 +4,30 @@
       <header class="header">header</header>
     </el-header>
     <el-container>
-      <el-aside>
-        <aside class="aside">aside</aside>
+      <el-aside width="auto">
+        <el-menu class="navMenu" :router="true" unique-opened>
+          <el-submenu index="1">
+            <template slot="title"
+              ><i class="el-icon-user"></i>管理操作</template
+            >
+            <el-menu-item-group>
+              <el-menu-item index="/user">用户信息</el-menu-item>
+              <el-menu-item index="/order">订单信息</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+        </el-menu>
       </el-aside>
+
       <el-main>
         <router-view></router-view>
       </el-main>
-
     </el-container>
-    <el-footer>
-    </el-footer>
-
+    <el-footer> </el-footer>
   </el-container>
 </template>
 
 <style scoped>
-.el-footer{
+.el-footer {
   background: gray;
 }
 </style>
@@ -32,6 +40,6 @@
 // import main from '../basic/main'
 
 export default {
-  name: 'test'
-}
+  name: "test",
+};
 </script>

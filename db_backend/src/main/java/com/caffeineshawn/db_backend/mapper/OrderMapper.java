@@ -1,6 +1,7 @@
 package com.caffeineshawn.db_backend.mapper;
 
 import com.caffeineshawn.db_backend.entity.Order;
+import com.caffeineshawn.db_backend.entity.QueryInfo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -10,5 +11,5 @@ public interface OrderMapper {
 
     int addOrder(Order order);
 
-    List<Order> findUserOrder(int user_id);
+    List<Order> findAllOrder(QueryInfo queryInfo);
 }

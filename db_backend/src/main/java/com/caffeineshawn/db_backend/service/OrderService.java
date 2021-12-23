@@ -1,6 +1,7 @@
 package com.caffeineshawn.db_backend.service;
 
 import com.caffeineshawn.db_backend.entity.Order;
+import com.caffeineshawn.db_backend.entity.QueryInfo;
 import com.caffeineshawn.db_backend.mapper.OrderMapper;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,8 @@ public class OrderService {
         return orderMapper.addOrder(order);
     }
 
-    public List<Order> findUserOrder(int user_id){
-        return orderMapper.findUserOrder(user_id);
+    public List<Order> findAllOrder(QueryInfo queryInfo){
+        queryInfo.setPage((queryInfo.getPage() - 1) * queryInfo.getSize());
+        return orderMapper.findAllOrder(queryInfo);
     }
 }

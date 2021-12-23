@@ -15,7 +15,13 @@
                     column="user_id"
                     select="com.caffeineshawn.db_backend.mapper.OrderMapper.findUserOrder"/>
     </resultMap>
-    
+
+    <insert id="addUser" useGeneratedKeys="true" keyProperty="user_id"
+            parameterType="com.caffeineshawn.db_backend.entity.User">
+        insert into user(user_name, user_gender, user_phone)
+        values (#{user_name}, #{user_gender}, #{user_phone})
+    </insert>
+
     <select id="findUserById" resultMap="userMap">
         select * from user where user_id = #{user_id}
     </select>
@@ -28,6 +34,7 @@
                 or user_phone like concat('%', #{information}, '%')
                 or user_gender like concat('%', #{information}, '%')
             </if>
+        limit #{page},#{size}
     </select>
 
     <select id="findAllUserCount" resultType="java.lang.Integer">

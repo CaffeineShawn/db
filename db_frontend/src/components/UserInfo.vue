@@ -31,17 +31,17 @@
             label="用户性别"
             prop="user_gender"
           ></el-table-column>
-          <el-table-column label="查看用户订单">
+          <!-- <el-table-column label="用户订单">
             <template slot-scope="scope">
               <el-button
                 type="primary"
                 icon="el-icon-view"
                 size="mini"
-                @click="showPaperAnalyseDialog(scope.row.user_id)"
-                >查看信息</el-button
+                @click="getUserOrder(scope.row.user_id)"
+                >查看用户订单</el-button
               >
             </template>
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
       </main>
     </el-main>
@@ -62,13 +62,22 @@
 
 <style scoped>
 .el-footer {
-  background: rgb(65, 61, 61)
+  background: rgb(65, 61, 61);
 }
 .el-main {
-  background: #BEEDC7
+  background: white;
 }
-.el-header{
-  background: white
+.el-header {
+  background: white;
+}
+.el-table {
+  border-radius: 10px;
+}
+.el-input {
+  top: 10px;
+}
+.el-pagination{
+    text-align: center;
 }
 </style>
 
@@ -113,6 +122,11 @@ export default {
       this.queryInfo.page = newPage
       this.getUserList()
     }
+    // getUserOrder (id) {
+    //   this.$router.push({
+    //     path: '/order', query: {user_id: id}
+    //   })
+    // }
   }
 }
 </script>
