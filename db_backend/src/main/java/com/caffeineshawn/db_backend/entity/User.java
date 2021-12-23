@@ -1,6 +1,5 @@
 package com.caffeineshawn.db_backend.entity;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class User {
@@ -8,6 +7,7 @@ public class User {
     private String user_name;
     private String user_password;
     private String user_gender;
+    private String user_phone;
     private List<Order> orderList;
 
     public int getUser_id() {
@@ -42,6 +42,14 @@ public class User {
         this.user_gender = user_gender;
     }
 
+    public String getUser_phone() {
+        return user_phone;
+    }
+
+    public void setUser_phone(String user_phone) {
+        this.user_phone = user_phone;
+    }
+
     public List<Order> getOrderList() {
         return orderList;
     }
@@ -57,6 +65,7 @@ public class User {
                 ", user_name='" + user_name + '\'' +
                 ", user_password='" + user_password + '\'' +
                 ", user_gender='" + user_gender + '\'' +
+                ", user_phone='" + user_phone + '\'' +
                 ", orderList=" + orderList +
                 '}';
     }

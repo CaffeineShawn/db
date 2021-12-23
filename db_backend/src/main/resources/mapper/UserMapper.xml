@@ -20,6 +20,25 @@
         select * from user where user_id = #{user_id}
     </select>
 
+    <select id="findAllUser" parameterType="com.caffeineshawn.db_backend.entity.QueryInfo"
+            resultType="com.caffeineshawn.db_backend.entity.User">
+        select * from user
+            <if test="information != '' and information != null">
+                where user_name like concat('%', #{information}, '%')
+                or user_phone like concat('%', #{information}, '%')
+                or user_gender like concat('%', #{information}, '%')
+            </if>
+    </select>
+
+    <select id="findAllUserCount" resultType="java.lang.Integer">
+        select count(*) from user
+        <if test="information != '' and information != null">
+            where user_name like concat('%', #{information}, '%')
+            or user_phone like concat('%', #{information}, '%')
+            or user_gender like concat('%', #{information}, '%')
+        </if>
+    </select>
+
     
     
 </mapper>

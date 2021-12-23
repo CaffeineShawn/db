@@ -15,7 +15,7 @@
                 <property name="driver" value="com.mysql.cj.jdbc.Driver" />
                 <!-- 连接数据库的URL -->
                 <property name="url"
-                          value="jdbc:mysql://localhost:3306/soft_exp" />
+                          value="jdbc:mysql://localhost:3306/db" />
                 <property name="username" value="root" />
                 <property name="password" value="aaaaaaaa66" />
             </dataSource>
@@ -25,6 +25,9 @@
     <mappers>
 <!--        <mapper resource="mapper/websiteMapper.xml" />-->
 <!--        <package name="resources.mapper"/>-->
-        <package name="resources.mapper"/>
+        <mapper resource="mapper/TrackMapper.xml"/>
+        <mapper resource="mapper/GoodMapper.xml"/>
+        <mapper resource="mapper/OrderMapper.xml"/>
+        <mapper resource="mapper/UserMapper.xml"/>
     </mappers>
 </configuration>

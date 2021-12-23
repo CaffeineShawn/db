@@ -4,6 +4,7 @@ public class Order {
     private int consignor_id;
     private int consignee_id;
     private int good_id;
+    private double good_price;
 
     public int getConsignor_id() {
         return consignor_id;
@@ -29,12 +30,21 @@ public class Order {
         this.good_id = good_id;
     }
 
+    public double getGood_price() {
+        return good_price;
+    }
+
+    public void setGood_price(double good_price) {
+        this.good_price = good_price;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
                 "consignor_id=" + consignor_id +
                 ", consignee_id=" + consignee_id +
                 ", good_id=" + good_id +
+                ", good_price=" + good_price +
                 '}';
     }
 }
