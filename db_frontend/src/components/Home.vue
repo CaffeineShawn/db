@@ -30,6 +30,11 @@
 .el-footer {
   background: gray;
 }
+
+.navMenu el-menu, .el-aside {
+  min-width: 137px !important;
+  overflow: hidden;
+}
 </style>
 
 <script>
