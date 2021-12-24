@@ -95,6 +95,7 @@
       title="物流信息"
       center
       :visible.sync="orderTrackDialogVisible"
+      width="30%"
     >
       <div class="TrackBox">
         查看方式：
