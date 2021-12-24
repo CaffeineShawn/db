@@ -35,10 +35,16 @@ public class OrderController {
 
     @GetMapping("/findOrderTrack/{order_id}")
     public String findOrderTrack(@PathVariable int order_id){
-        System.out.println(order_id);
         List<Track> tList = orderService.findOrderTrack(order_id);
         HashMap<String, Object> map = new HashMap<>();
         map.put("res", tList);
         return JSON.toJSONString(map);
+    }
+
+    @DeleteMapping("/deleteOrderById/{order_id}")
+    public String deleteOrderById(@PathVariable int order_id){
+        if(orderService.deleteOrderById(order_id) == 1)
+            return "ok";
+        return "error";
     }
 }

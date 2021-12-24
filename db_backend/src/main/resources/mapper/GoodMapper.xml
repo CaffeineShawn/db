@@ -17,4 +17,17 @@
         and order_good.good_id = good.good_id
     </select>
 
+    <update id="updateGoodInfo" parameterType="com.caffeineshawn.db_backend.entity.Good">
+        update good
+        set good_state = #{good_state},good_price = #{good_price}, good_origin = #{good_origin},
+            good_weight = #{good_weight}, good_destination = #{good_destination},
+            good_name = #{good_name}
+        where good_id = #{good_id}
+    </update>
+
+    <delete id="deleteGoodById">
+        delete from good
+        where good_id = #{good_id}
+    </delete>
+
 </mapper>

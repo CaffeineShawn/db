@@ -3,6 +3,7 @@ package com.caffeineshawn.db_backend.service;
 import com.caffeineshawn.db_backend.entity.Order;
 import com.caffeineshawn.db_backend.entity.QueryInfo;
 import com.caffeineshawn.db_backend.entity.Track;
+import com.caffeineshawn.db_backend.mapper.GoodMapper;
 import com.caffeineshawn.db_backend.mapper.OrderMapper;
 import com.caffeineshawn.db_backend.mapper.TrackMapper;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ public class OrderService {
     OrderMapper orderMapper;
     @Resource
     TrackMapper trackMapper;
+    @Resource
+    GoodMapper goodMapper;
 
 
     public int addOrder(Order order){
@@ -38,5 +41,12 @@ public class OrderService {
 
     public int findAllOrderCount(QueryInfo queryInfo){
         return orderMapper.findAllOrderCount(queryInfo);
+    }
+
+    public int deleteOrderById(int order_id){
+        int good_id = orderMapper.findGoodIdByOrderId(order_id);
+        if(orderMapper.deleteOrderById(order_id) == 1 && goodMapper.deleteGoodById(good_id) == 1)
+            return 1;
+        return 0;
     }
 }

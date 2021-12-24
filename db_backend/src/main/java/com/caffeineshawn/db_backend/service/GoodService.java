@@ -20,4 +20,8 @@ public class GoodService {
         return goodMapper.findGoodById(order_id);
     }
 
+    public int updateGoodInfo(Good good){
+        return goodMapper.updateGoodInfo(good);
+    }
+
 }
