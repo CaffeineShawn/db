@@ -18,4 +18,7 @@ public interface OrderMapper {
 
     int findAllOrderCount(QueryInfo queryInfo);
 
+    int deleteOrderById(int order_id);
+
+    int findGoodIdByOrderId(int order_id);
 }

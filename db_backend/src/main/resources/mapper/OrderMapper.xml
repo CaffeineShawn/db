@@ -5,7 +5,8 @@
 
 <mapper namespace="com.caffeineshawn.db_backend.mapper.OrderMapper">
 
-    <insert id="addOrder" parameterType="java.lang.Integer">
+    <insert id="addOrder" useGeneratedKeys="true" keyProperty="order_id"
+            parameterType="java.lang.Integer">
         insert into `order`(consignor_id, consignee_id)
         values (#{consignor_id}, #{consignee_id})
     </insert>
@@ -64,4 +65,14 @@
         where os.consignee_id = `user`.user_id
           and os.good_id = good.good_id
     </select>
+
+    <delete id="deleteOrderById">
+        delete from `order`
+        where order_id = #{order_id}
+    </delete>
+
+    <select id="findGoodIdByOrderId" resultType="java.lang.Integer">
+        select good_id from order_good where order_id = #{order_id}
+    </select>
+
 </mapper>

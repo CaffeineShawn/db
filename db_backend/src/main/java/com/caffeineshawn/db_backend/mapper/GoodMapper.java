@@ -9,4 +9,8 @@ public interface GoodMapper {
     int addGood(Good good);
 
     Good findGoodById(int order_id);
+
+    int updateGoodInfo(Good good);
+
+    int deleteGoodById(int good_id);
 }
