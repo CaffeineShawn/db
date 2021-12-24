@@ -21,4 +21,8 @@ public class OrderService {
         queryInfo.setPage((queryInfo.getPage() - 1) * queryInfo.getSize());
         return orderMapper.findAllOrder(queryInfo);
     }
+
+    public List<Order> findOrders(){
+        return orderMapper.findOrders();
+    }
 }

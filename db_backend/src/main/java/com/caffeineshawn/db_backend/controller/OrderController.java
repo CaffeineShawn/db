@@ -24,4 +24,10 @@ public class OrderController {
         map.put("total", oList.size());
         return JSON.toJSONString(map);
     }
+
+    @GetMapping("/findOrders")
+    public String findOrders(){
+        List<Order> orderList = orderService.findOrders();
+        return JSON.toJSONString(orderList);
+    }
 }

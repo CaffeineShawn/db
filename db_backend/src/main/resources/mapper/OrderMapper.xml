@@ -31,4 +31,16 @@
         </if>
         limit #{page},#{size}
     </select>
+
+    <select id="findOrders" resultType="java.util.HashMap">
+        select os.user_name consignor,os.user_phone consignor_phone,
+               `user`.user_name consignee,`user`.user_phone consignee_phone,good_name,
+               good.good_price,good.good_state
+        from `user`,good,(
+            select user_name,user_phone, `order`.consignee_id,good_id from `order`,`user`
+            where `order`.consignor_id = `user`.user_id
+        ) os
+        where os.consignee_id = `user`.user_id
+          and os.good_id = good.good_id
+    </select>
 </mapper>

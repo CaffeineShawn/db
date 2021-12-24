@@ -12,4 +12,6 @@ public interface OrderMapper {
     int addOrder(Order order);
 
     List<Order> findAllOrder(QueryInfo queryInfo);
+
+    List<Order> findOrders();
 }
