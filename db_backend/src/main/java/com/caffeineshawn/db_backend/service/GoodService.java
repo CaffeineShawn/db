@@ -16,4 +16,8 @@ public class GoodService {
         return goodMapper.addGood(good);
     }
 
+    public Good findGoodById(int order_id){
+        return goodMapper.findGoodById(order_id);
+    }
+
 }

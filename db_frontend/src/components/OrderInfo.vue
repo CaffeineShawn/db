@@ -24,7 +24,7 @@
 
     <el-main>
       <main class="main">
-        <el-table ref="userTable" :data="orderList" border stripe>
+        <el-table ref="orderTable" :data="orderList" border stripe>
           <el-table-column
             type="index"
             :index="indexMethod"
@@ -58,11 +58,6 @@
           ></el-table-column>
           <el-table-column
             width="100px"
-            label="价格(¥)"
-            prop="good_price"
-          ></el-table-column>
-          <el-table-column
-            width="100px"
             label="状态"
             prop="good_state"
           ></el-table-column>
@@ -72,21 +67,21 @@
                 type="primary is-plain"
                 icon="el-icon-box"
                 size="mini"
-                @click="showOrderTrackDialog(scope.row.order_id)"
+                @click="showorderTrackDialog(scope.row.order_id)"
                 >物流信息</el-button
               >
               <el-button
                 type="primary is-plain"
                 icon="el-icon-view"
                 size="mini"
-                @click="getGoodInfo(scope.row.order_id)"
+                @click="showgoodInfoDialog(scope.row.order_id)"
                 >商品信息</el-button
               >
               <el-button
                 type="primary is-plain"
                 icon="el-icon-delete"
                 size="mini"
-                @click="getGoodInfo(scope.row.order_id)"
+                @click="getgoodInfo(scope.row.order_id)"
                 >删除订单</el-button
               >
             </template>
@@ -96,20 +91,18 @@
     </el-main>
 
     <el-dialog
-      class="OrderTrack"
+      class="orderTrack"
       title="物流信息"
       center
       :visible.sync="orderTrackDialogVisible"
     >
-      <div class="OrderRadio">
+      <div class="TrackBox">
         查看方式：
         <el-radio-group v-model="reverse">
           <el-radio :label="true">倒序</el-radio>
           <el-radio :label="false">正序</el-radio>
         </el-radio-group>
-      </div>
-      <br/>
-      <div class="OrderTrackBox">
+        <el-divider></el-divider>
         <el-timeline :reverse="reverse">
           <el-timeline-item
             v-for="(item, index) in orderTrack"
@@ -119,11 +112,58 @@
             :timestamp="dateFormat(item.current_time)"
             placement="top"
           >
-          <p v-if="index == 0">货物从{{ item.current_location }}出发</p>
-          <p v-else>货物到达{{ item.current_location }}</p>
+            <p v-if="index == 0">货物从{{ item.current_location }}出发</p>
+            <p v-else>货物到达{{ item.current_location }}</p>
           </el-timeline-item>
         </el-timeline>
       </div>
+      <div></div>
+    </el-dialog>
+
+    <el-dialog
+      class="goodInfoBox"
+      title="商品信息"
+      width="30%"
+      :visible.sync="goodInfoDialogVisible"
+    >
+      <el-card class="goodInfoCard">
+      <span>
+        <el-form ref="goodInfo" :model="goodInfo" label-width="100px" label-position="left">
+          <el-form-item label="商品名：" prop="good_name">
+            <el-input type="textarea" v-model="goodInfo.good_name" placeholder="请输入商品名"></el-input>
+          </el-form-item>
+          <el-form-item label="重量(kg)：" prop="good_weight">
+            <el-input type="textarea" v-model="goodInfo.good_weight" placeholder="请输入重量"></el-input>
+          </el-form-item>
+          <el-form-item label="价格(¥)：" prop="good_price">
+            <el-input type="textarea" v-model="goodInfo.good_price" placeholder="请输入价格"></el-input>
+          </el-form-item>
+          <el-form-item label="发货地点：" prop="good_origin">
+            <el-input type="textarea" v-model="goodInfo.good_origin" placeholder="请输入发货地点"></el-input>
+          </el-form-item>
+          <el-form-item label="目的地：" prop="good_destination">
+            <el-input type="textarea" v-model="goodInfo.good_destination" placeholder="请输入目的地"></el-input>
+          </el-form-item>
+          <el-form-item label="状态：" prop="good_state">
+            <el-select
+              v-model="goodInfo.good_state"
+              placeholder="物品状态"
+            >
+              <el-option
+                v-for="item in goodStateList"
+                :key="item"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </span>
+      </el-card>
+      <span slot="footer" class="goodInfoDialog-footer">
+        <el-button type="primary" @click="goodInfoDialogVisible=false">取 消</el-button>
+        <el-button type="primary">修 改</el-button>
+      </span>
     </el-dialog>
 
     <el-footer>
@@ -162,6 +202,10 @@
 .el-pagination {
   text-align: center;
 }
+.TrackBox {
+  width: 15vw;
+}
+
 </style>
 
 <script>
@@ -177,8 +221,11 @@ export default {
       },
       total: 0,
       orderTrackDialogVisible: false,
+      goodInfoDialogVisible: false,
       orderTrack: [],
-      reverse: false
+      reverse: false,
+      goodInfo: {},
+      goodStateList: ['待发货', '已发货', '已送达']
     }
   },
   created () {
@@ -211,21 +258,34 @@ export default {
       this.queryInfo.page = newPage
       this.getOrderList()
     },
-    async getOrderTrack (id) {
+    async getorderTrack (id) {
       await this.$http
         .get('/order/findOrderTrack/' + id)
         .then((result) => {
           this.orderTrack = result.data.res
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    async getgoodInfo (id) {
+      await this.$http
+        .get('/good/findGoodById/' + id)
+        .then((result) => {
+          this.goodInfo = result.data.res
           console.log(result)
         })
         .catch((err) => {
           console.log(err)
         })
     },
-    showOrderTrackDialog (id) {
-      console.log(id)
-      this.getOrderTrack(id)
+    showorderTrackDialog (id) {
+      this.getorderTrack(id)
       this.orderTrackDialogVisible = true
+    },
+    showgoodInfoDialog (id) {
+      this.getgoodInfo(id)
+      this.goodInfoDialogVisible = true
     },
     getIcon (index) {
       var icon = ''

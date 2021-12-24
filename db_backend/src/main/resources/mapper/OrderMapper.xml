@@ -14,7 +14,7 @@
             resultType="java.util.HashMap">
         select os.user_name consignor,os.user_phone consignor_phone,os.order_id,
                `user`.user_name consignee,`user`.user_phone consignee_phone,good_name,
-               good.good_price,good.good_state
+               good.good_state
         from `user`,good,order_good,(
             select user_name,user_phone,consignee_id,order_id from `order`,`user`
             where consignor_id = user_id
@@ -31,6 +31,26 @@
           )
         </if>
         limit #{page},#{size}
+    </select>
+
+    <select id="findAllOrderCount" parameterType="com.caffeineshawn.db_backend.entity.QueryInfo"
+            resultType="java.lang.Integer">
+        select count(*)
+        from `user`,good,order_good,(
+        select user_name,user_phone,consignee_id,order_id from `order`,`user`
+        where consignor_id = user_id
+        ) os
+        where os.consignee_id = `user`.user_id
+        and os.order_id = order_good.order_id
+        and order_good.good_id = good.good_id
+        <if test="information != '' and information != null">
+            and (
+            os.user_name like concat('%', #{information}, '%')
+            or os.user_phone like concat('%', #{information}, '%')
+            or `user`.user_name like concat('%', #{information}, '%')
+            or `user`.user_phone like concat('%', #{information}, '%')
+            )
+        </if>
     </select>
 
     <select id="findOrders" resultType="java.util.HashMap">

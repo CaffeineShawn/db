@@ -16,4 +16,6 @@ public interface OrderMapper {
 
     List<Order> findOrders();
 
+    int findAllOrderCount(QueryInfo queryInfo);
+
 }

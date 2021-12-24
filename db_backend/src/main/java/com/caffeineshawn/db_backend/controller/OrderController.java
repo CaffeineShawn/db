@@ -20,9 +20,10 @@ public class OrderController {
     @PostMapping("/findAllOrder")
     public String findAllOrder(@RequestBody QueryInfo queryInfo){
         List<HashMap> oList = orderService.findAllOrder(queryInfo);
+        int total = orderService.findAllOrderCount(queryInfo);
         HashMap<String, Object> map = new HashMap<>();
         map.put("res", oList);
-        map.put("total", oList.size());
+        map.put("total", total);
         return JSON.toJSONString(map);
     }
 

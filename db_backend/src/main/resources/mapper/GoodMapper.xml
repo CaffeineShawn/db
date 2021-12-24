@@ -11,4 +11,10 @@
         values (#{good_name}, #{good_weight}, #{good_state}, #{good_destination}, #{good_origin})
     </insert>
 
+    <select id="findGoodById" resultType="com.caffeineshawn.db_backend.entity.Good">
+        select * from good,order_good
+        where order_good.order_id = #{order_id}
+        and order_good.good_id = good.good_id
+    </select>
+
 </mapper>

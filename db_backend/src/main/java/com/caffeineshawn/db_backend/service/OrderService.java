@@ -35,4 +35,8 @@ public class OrderService {
     public List<Track> findOrderTrack(int order_id){
         return trackMapper.findOrderTrack(order_id);
     }
+
+    public int findAllOrderCount(QueryInfo queryInfo){
+        return orderMapper.findAllOrderCount(queryInfo);
+    }
 }
