@@ -3,16 +3,16 @@ package com.caffeineshawn.db_backend.entity;
 import java.sql.Timestamp;
 
 public class Track {
-    private int good_id;
+    private int order_id;
     private String current_location;
-    private Timestamp current_time;
+    private java.sql.Timestamp current_time;
 
-    public int getGood_id() {
-        return good_id;
+    public int getOrder_id() {
+        return order_id;
     }
 
-    public void setGood_id(int good_id) {
-        this.good_id = good_id;
+    public void setOrder_id(int order_id) {
+        this.order_id = order_id;
     }
 
     public String getCurrent_location() {
@@ -34,7 +34,7 @@ public class Track {
     @Override
     public String toString() {
         return "Track{" +
-                "good_id=" + good_id +
+                "order_id=" + order_id +
                 ", current_location='" + current_location + '\'' +
                 ", current_time=" + current_time +
                 '}';

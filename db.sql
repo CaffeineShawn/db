@@ -1,7 +1,7 @@
 /*
  Navicat MySQL Data Transfer
 
- Source Server         : db
+ Source Server         : db_test
  Source Server Type    : MySQL
  Source Server Version : 80026
  Source Host           : localhost:3306
@@ -11,7 +11,7 @@
  Target Server Version : 80026
  File Encoding         : 65001
 
- Date: 23/12/2021 23:23:49
+ Date: 24/12/2021 19:02:37
 */
 
 SET NAMES utf8mb4;
@@ -45,7 +45,7 @@ CREATE TABLE `good`  (
   `good_origin` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `good_price` double(10, 2) NOT NULL,
   PRIMARY KEY (`good_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of good
@@ -61,34 +61,58 @@ DROP TABLE IF EXISTS `order`;
 CREATE TABLE `order`  (
   `consignor_id` int UNSIGNED NOT NULL,
   `consignee_id` int UNSIGNED NOT NULL,
-  `good_id` int UNSIGNED NOT NULL,
-  PRIMARY KEY (`consignor_id`, `good_id`, `consignee_id`) USING BTREE,
-  INDEX `good_id`(`good_id`) USING BTREE,
-  CONSTRAINT `order_ibfk_1` FOREIGN KEY (`good_id`) REFERENCES `good` (`good_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `order_id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`order_id`) USING BTREE,
+  INDEX `consignor_id`(`consignor_id`) USING BTREE,
+  INDEX `consignee_id`(`consignee_id`) USING BTREE,
+  CONSTRAINT `order_ibfk_1` FOREIGN KEY (`consignor_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `order_ibfk_2` FOREIGN KEY (`consignee_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of order
 -- ----------------------------
-INSERT INTO `order` VALUES (2, 1, 7);
-INSERT INTO `order` VALUES (1, 2, 8);
-INSERT INTO `order` VALUES (1, 3, 9);
+INSERT INTO `order` VALUES (2, 1, 1);
+INSERT INTO `order` VALUES (1, 2, 2);
+INSERT INTO `order` VALUES (1, 3, 3);
+
+-- ----------------------------
+-- Table structure for order_good
+-- ----------------------------
+DROP TABLE IF EXISTS `order_good`;
+CREATE TABLE `order_good`  (
+  `good_id` int UNSIGNED NOT NULL,
+  `order_id` int UNSIGNED NOT NULL,
+  INDEX `good_id`(`good_id`) USING BTREE,
+  INDEX `order_id`(`order_id`) USING BTREE,
+  CONSTRAINT `order_good_ibfk_1` FOREIGN KEY (`good_id`) REFERENCES `good` (`good_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `order_good_ibfk_2` FOREIGN KEY (`order_id`) REFERENCES `order` (`order_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of order_good
+-- ----------------------------
+INSERT INTO `order_good` VALUES (7, 1);
+INSERT INTO `order_good` VALUES (8, 2);
+INSERT INTO `order_good` VALUES (9, 3);
 
 -- ----------------------------
 -- Table structure for track
 -- ----------------------------
 DROP TABLE IF EXISTS `track`;
 CREATE TABLE `track`  (
-  `good_id` int UNSIGNED NOT NULL,
+  `order_id` int UNSIGNED NOT NULL,
   `current_location` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `current_time` datetime NOT NULL,
-  PRIMARY KEY (`good_id`) USING BTREE,
-  CONSTRAINT `track_ibfk_1` FOREIGN KEY (`good_id`) REFERENCES `good` (`good_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  INDEX `track_ibfk_1`(`order_id`) USING BTREE,
+  CONSTRAINT `track_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `order` (`order_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of track
 -- ----------------------------
+INSERT INTO `track` VALUES (2, '杭州', '2021-12-23 15:49:01');
+INSERT INTO `track` VALUES (2, '佛山', '2021-12-24 15:49:10');
 
 -- ----------------------------
 -- Table structure for user
@@ -101,7 +125,7 @@ CREATE TABLE `user`  (
   `user_gender` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `user_phone` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user

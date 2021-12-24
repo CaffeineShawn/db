@@ -8,5 +8,5 @@ import java.util.List;
 @Mapper
 public interface TrackMapper {
 
-    List<Track> findTrackByGoodId(int Good_id);
+    List<Track> findOrderTrack(int order_id);
 }
