@@ -18,7 +18,7 @@ Vue.config.productionTip = false
 Vue.prototype.$http = axios
 
 // axios默认路径
-axios.defaults.baseURL = 'http://localhost:8085'
+axios.defaults.baseURL = 'http://0.0.0.0:8085'
 
 new Vue({
   router,
