@@ -40,6 +40,12 @@ public class OrderController {
         map.put("res", tList);
         return JSON.toJSONString(map);
     }
+    
+    @GetMapping("/findTracksByOrderId/{order_id}")
+    public String findTracksByOrderId(@PathVariable int order_id){
+        List<Track> tracks = orderService.findOrderTrack(order_id);
+        return JSON.toJSONString(tracks);
+    }
 
     @DeleteMapping("/deleteOrderById/{order_id}")
     public String deleteOrderById(@PathVariable int order_id){
