@@ -2,17 +2,20 @@
   <el-container>
     <el-header>
       <header class="header">
-        <el-input
-          placeholder="请输入搜索的信息"
-          v-model="queryInfo.information"
-          clearable
-          @clear="getUserList"
-          style="width: 30vw"
-        >
-          <el-button slot="append" icon="el-icon-search" @click="getUserList"
-            >搜索</el-button
+        <el-row type="flex">
+          <el-col :span="6">
+           <el-input
+            placeholder="请输入搜索的信息"
+            v-model="queryInfo.information"
+            clearable
+            @clear="getUserList"
           >
-        </el-input>
+            <el-button slot="append" icon="el-icon-search" @click="getUserList"
+              >搜索</el-button
+              >
+          </el-input>
+         </el-col>
+        </el-row>
       </header>
     </el-header>
 
@@ -75,6 +78,7 @@
 }
 .el-input {
   top: 10px;
+  left: 30px;
 }
 .el-pagination{
     text-align: center;
