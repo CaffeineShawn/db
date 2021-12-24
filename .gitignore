@@ -1,1 +1,4 @@
 /db_frontend/node_modules/
+/.idea/
+/db_frontend/src/main.js
+/db_backend/src/main/resources/application.properties
