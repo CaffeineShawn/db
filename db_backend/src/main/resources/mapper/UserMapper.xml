@@ -37,6 +37,10 @@
         limit #{page},#{size}
     </select>
 
+    <select id="findUsers" resultType="com.caffeineshawn.db_backend.entity.User">
+        select * from user
+    </select>
+
     <select id="findAllUserCount" resultType="java.lang.Integer">
         select count(*) from user
         <if test="information != '' and information != null">
