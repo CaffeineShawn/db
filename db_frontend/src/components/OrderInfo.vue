@@ -6,6 +6,7 @@
           <el-col :span="6">
             <!-- 搜索区域 -->
             <el-input
+              style="top: 10px"
               placeholder="请输入搜索用户姓名或手机号"
               v-model="queryInfo.information"
               clearable
@@ -17,6 +18,14 @@
                 @click="getOrderList"
               ></el-button>
             </el-input>
+          </el-col>
+          <el-col>
+          <el-button
+              style="margin-left: 10px; margin-top: 10px"
+              icon="el-icon-plus"
+            >
+            添加订单
+            </el-button>
           </el-col>
         </el-row>
       </header>
@@ -220,10 +229,6 @@
   /* margin-left: 30px; */
   margin-right: 30px;
 }
-.el-input {
-  top: 10px;
-  left: 30px;
-}
 .el-pagination {
   text-align: center;
 }
@@ -305,7 +310,7 @@ export default {
     },
     async deleteOrderById (id) {
       const confirmRes = await this.$confirm(
-        '已答对该题，是否从错题集里删除该题',
+        '确认删除该订单？该操作不可逆',
         '提示',
         {
           confirmButtonText: '确定',

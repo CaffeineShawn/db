@@ -44,8 +44,7 @@ public class OrderService {
     }
 
     public int deleteOrderById(int order_id){
-        int good_id = orderMapper.findGoodIdByOrderId(order_id);
-        if(orderMapper.deleteOrderById(order_id) == 1 && goodMapper.deleteGoodById(good_id) == 1)
+        if(goodMapper.deleteGoodByOrderId(order_id) == 1 && orderMapper.deleteOrderById(order_id) == 1)
             return 1;
         return 0;
     }

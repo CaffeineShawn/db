@@ -25,9 +25,15 @@
         where good_id = #{good_id}
     </update>
 
-    <delete id="deleteGoodById">
+    <delete id="deleteGoodByOrderId">
         delete from good
-        where good_id = #{good_id}
+        where good_id = (
+            select good_id from(
+                select good.good_id from good,order_good
+                where order_good.order_id = #{order_id}
+                and order_good.good_id = good.good_id
+            ) as temp
+        )
     </delete>
 
 </mapper>
