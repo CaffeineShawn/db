@@ -16,4 +16,9 @@ public interface OrderMapper {
 
     List<Order> findOrders();
 
+    int findAllOrderCount(QueryInfo queryInfo);
+
+    int deleteOrderById(int order_id);
+
+    int findGoodIdByOrderId(int order_id);
 }

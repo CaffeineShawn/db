@@ -20,9 +20,10 @@ public class OrderController {
     @PostMapping("/findAllOrder")
     public String findAllOrder(@RequestBody QueryInfo queryInfo){
         List<HashMap> oList = orderService.findAllOrder(queryInfo);
+        int total = orderService.findAllOrderCount(queryInfo);
         HashMap<String, Object> map = new HashMap<>();
         map.put("res", oList);
-        map.put("total", oList.size());
+        map.put("total", total);
         return JSON.toJSONString(map);
     }
 
@@ -34,10 +35,22 @@ public class OrderController {
 
     @GetMapping("/findOrderTrack/{order_id}")
     public String findOrderTrack(@PathVariable int order_id){
-        System.out.println(order_id);
         List<Track> tList = orderService.findOrderTrack(order_id);
         HashMap<String, Object> map = new HashMap<>();
         map.put("res", tList);
         return JSON.toJSONString(map);
+    }
+    
+    @GetMapping("/findTracksByOrderId/{order_id}")
+    public String findTracksByOrderId(@PathVariable int order_id){
+        List<Track> tracks = orderService.findOrderTrack(order_id);
+        return JSON.toJSONString(tracks);
+    }
+
+    @DeleteMapping("/deleteOrderById/{order_id}")
+    public String deleteOrderById(@PathVariable int order_id){
+        if(orderService.deleteOrderById(order_id) == 1)
+            return "ok";
+        return "error";
     }
 }

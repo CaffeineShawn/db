@@ -22,6 +22,10 @@ public class UserService {
         return userMapper.findAllUser(queryInfo);
     }
 
+    public List<User> findUsers() {
+        return userMapper.findUsers();
+    }
+
     public int findAllUserCount(QueryInfo queryInfo){
         return userMapper.findAllUserCount(queryInfo.getInformation());
     }

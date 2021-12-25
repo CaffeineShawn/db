@@ -7,4 +7,10 @@ import org.apache.ibatis.annotations.Mapper;
 public interface GoodMapper {
 
     int addGood(Good good);
+
+    Good findGoodById(int order_id);
+
+    int updateGoodInfo(Good good);
+
+    int deleteGoodByOrderId(int order_id);
 }

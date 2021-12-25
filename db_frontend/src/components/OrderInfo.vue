@@ -6,6 +6,7 @@
           <el-col :span="6">
             <!-- 搜索区域 -->
             <el-input
+              style="top: 10px"
               placeholder="请输入搜索用户姓名或手机号"
               v-model="queryInfo.information"
               clearable
@@ -18,13 +19,21 @@
               ></el-button>
             </el-input>
           </el-col>
+          <el-col>
+          <el-button
+              style="margin-left: 10px; margin-top: 10px"
+              icon="el-icon-plus"
+            >
+            添加订单
+            </el-button>
+          </el-col>
         </el-row>
       </header>
     </el-header>
 
     <el-main>
       <main class="main">
-        <el-table ref="userTable" :data="orderList" border stripe>
+        <el-table ref="orderTable" :data="orderList" border stripe>
           <el-table-column
             type="index"
             :index="indexMethod"
@@ -58,11 +67,6 @@
           ></el-table-column>
           <el-table-column
             width="100px"
-            label="价格(¥)"
-            prop="good_price"
-          ></el-table-column>
-          <el-table-column
-            width="100px"
             label="状态"
             prop="good_state"
           ></el-table-column>
@@ -72,21 +76,21 @@
                 type="primary is-plain"
                 icon="el-icon-box"
                 size="mini"
-                @click="showOrderTrackDialog(scope.row.order_id)"
+                @click="showorderTrackDialog(scope.row.order_id)"
                 >物流信息</el-button
               >
               <el-button
                 type="primary is-plain"
                 icon="el-icon-view"
                 size="mini"
-                @click="getGoodInfo(scope.row.order_id)"
+                @click="showGoodInfoDialog(scope.row.order_id)"
                 >商品信息</el-button
               >
               <el-button
                 type="primary is-plain"
                 icon="el-icon-delete"
                 size="mini"
-                @click="getGoodInfo(scope.row.order_id)"
+                @click="deleteOrderById(scope.row.order_id)"
                 >删除订单</el-button
               >
             </template>
@@ -96,20 +100,19 @@
     </el-main>
 
     <el-dialog
-      class="OrderTrack"
+      class="orderTrack"
       title="物流信息"
       center
       :visible.sync="orderTrackDialogVisible"
+      width="30%"
     >
-      <div class="OrderRadio">
-        查看方式：
+      <div class="TrackBox">
+        查看方式:
         <el-radio-group v-model="reverse">
           <el-radio :label="true">倒序</el-radio>
           <el-radio :label="false">正序</el-radio>
         </el-radio-group>
-      </div>
-      <br/>
-      <div class="OrderTrackBox">
+        <el-divider></el-divider>
         <el-timeline :reverse="reverse">
           <el-timeline-item
             v-for="(item, index) in orderTrack"
@@ -119,11 +122,82 @@
             :timestamp="dateFormat(item.current_time)"
             placement="top"
           >
-          <p v-if="index == 0">货物从{{ item.current_location }}出发</p>
-          <p v-else>货物到达{{ item.current_location }}</p>
+            <p v-if="index == 0">货物从{{ item.current_location }}出发</p>
+            <p v-else>货物到达{{ item.current_location }}</p>
           </el-timeline-item>
         </el-timeline>
       </div>
+      <div></div>
+    </el-dialog>
+
+    <el-dialog
+      class="goodInfoBox"
+      title="商品信息"
+      width="30%"
+      :visible.sync="goodInfoDialogVisible"
+    >
+      <el-card class="goodInfoCard">
+        <span>
+          <el-form
+            ref="goodInfo"
+            :model="goodInfo"
+            label-width="100px"
+            label-position="left"
+          >
+            <el-form-item label="商品名:" prop="good_name">
+              <el-input
+                type="textarea"
+                v-model="goodInfo.good_name"
+                placeholder="请输入商品名"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="重量(kg):" prop="good_weight">
+              <el-input
+                type="textarea"
+                v-model="goodInfo.good_weight"
+                placeholder="请输入重量"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="价格(¥):" prop="good_price">
+              <el-input
+                type="textarea"
+                v-model="goodInfo.good_price"
+                placeholder="请输入价格"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="发货地点:" prop="good_origin">
+              <el-input
+                type="textarea"
+                v-model="goodInfo.good_origin"
+                placeholder="请输入发货地点"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="目的地:" prop="good_destination">
+              <el-input
+                type="textarea"
+                v-model="goodInfo.good_destination"
+                placeholder="请输入目的地"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="状态:" prop="good_state">
+              <el-select v-model="goodInfo.good_state" placeholder="物品状态">
+                <el-option
+                  v-for="item in goodStateList"
+                  :key="item"
+                  :label="item"
+                  :value="item"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+        </span>
+      </el-card>
+      <span slot="footer" class="goodInfoDialog-footer">
+        <el-button type="primary" @click="goodInfoDialogVisible = false"
+          >取 消</el-button
+        >
+        <el-button type="primary" @click="updateGoodInfo">修 改</el-button>
+      </span>
     </el-dialog>
 
     <el-footer>
@@ -155,12 +229,11 @@
   /* margin-left: 30px; */
   margin-right: 30px;
 }
-.el-input {
-  top: 10px;
-  left: 30px;
-}
 .el-pagination {
   text-align: center;
+}
+.TrackBox {
+  width: 15vw;
 }
 </style>
 
@@ -177,8 +250,11 @@ export default {
       },
       total: 0,
       orderTrackDialogVisible: false,
+      goodInfoDialogVisible: false,
       orderTrack: [],
-      reverse: false
+      reverse: false,
+      goodInfo: {},
+      goodStateList: ['待发货', '已发货', '已送达']
     }
   },
   created () {
@@ -211,21 +287,70 @@ export default {
       this.queryInfo.page = newPage
       this.getOrderList()
     },
-    async getOrderTrack (id) {
+    async getorderTrack (id) {
       await this.$http
         .get('/order/findOrderTrack/' + id)
         .then((result) => {
           this.orderTrack = result.data.res
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    async getgoodInfo (id) {
+      await this.$http
+        .get('/good/findGoodById/' + id)
+        .then((result) => {
+          this.goodInfo = result.data.res
           console.log(result)
         })
         .catch((err) => {
           console.log(err)
         })
     },
-    showOrderTrackDialog (id) {
-      console.log(id)
-      this.getOrderTrack(id)
+    async deleteOrderById (id) {
+      const confirmRes = await this.$confirm(
+        '确认删除该订单？该操作不可逆',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch((err) => err)
+      if (confirmRes !== 'confirm') return this.$message.info('已取消删除')
+      await this.$http.delete('/order/deleteOrderById/' + id).then((result) => {
+        if (result.data === 'ok') {
+          this.$message.success('删除成功')
+          this.getOrderList()
+        } else {
+          this.$message.success('删除异常')
+          this.getOrderList()
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+    updateGoodInfo () {
+      this.$http.put('good/updateGoodInfo', this.goodInfo).then((result) => {
+        if (result.data === 'ok') {
+          this.$message.success('修改成功')
+          this.getOrderList()
+          this.goodInfoDialogVisible = false
+        } else {
+          this.$message.error('修改失败')
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+    showorderTrackDialog (id) {
+      this.getorderTrack(id)
       this.orderTrackDialogVisible = true
+    },
+    showGoodInfoDialog (id) {
+      this.getgoodInfo(id)
+      this.goodInfoDialogVisible = true
     },
     getIcon (index) {
       var icon = ''

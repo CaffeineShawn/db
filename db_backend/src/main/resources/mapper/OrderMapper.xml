@@ -5,7 +5,8 @@
 
 <mapper namespace="com.caffeineshawn.db_backend.mapper.OrderMapper">
 
-    <insert id="addOrder" parameterType="java.lang.Integer">
+    <insert id="addOrder" useGeneratedKeys="true" keyProperty="order_id"
+            parameterType="java.lang.Integer">
         insert into `order`(consignor_id, consignee_id)
         values (#{consignor_id}, #{consignee_id})
     </insert>
@@ -14,7 +15,7 @@
             resultType="java.util.HashMap">
         select os.user_name consignor,os.user_phone consignor_phone,os.order_id,
                `user`.user_name consignee,`user`.user_phone consignee_phone,good_name,
-               good.good_price,good.good_state
+               good.good_state
         from `user`,good,order_good,(
             select user_name,user_phone,consignee_id,order_id from `order`,`user`
             where consignor_id = user_id
@@ -33,15 +34,47 @@
         limit #{page},#{size}
     </select>
 
-    <select id="findOrders" resultType="java.util.HashMap">
-        select os.user_name consignor,os.user_phone consignor_phone,
-               `user`.user_name consignee,`user`.user_phone consignee_phone,good_name,
-               good.good_price,good.good_state
-        from `user`,good,(
-            select user_name,user_phone, `order`.consignee_id,good_id from `order`,`user`
-            where `order`.consignor_id = `user`.user_id
+    <select id="findAllOrderCount" parameterType="com.caffeineshawn.db_backend.entity.QueryInfo"
+            resultType="java.lang.Integer">
+        select count(*)
+        from `user`,good,order_good,(
+        select user_name,user_phone,consignee_id,order_id from `order`,`user`
+        where consignor_id = user_id
         ) os
         where os.consignee_id = `user`.user_id
-          and os.good_id = good.good_id
+        and os.order_id = order_good.order_id
+        and order_good.good_id = good.good_id
+        <if test="information != '' and information != null">
+            and (
+            os.user_name like concat('%', #{information}, '%')
+            or os.user_phone like concat('%', #{information}, '%')
+            or `user`.user_name like concat('%', #{information}, '%')
+            or `user`.user_phone like concat('%', #{information}, '%')
+            )
+        </if>
     </select>
+
+    <select id="findOrders" resultType="java.util.HashMap">
+        select os.user_name consignor,os.user_phone consignor_phone,os.order_id,
+               `user`.user_name consignee,`user`.user_phone consignee_phone,good_name,
+               good.good_price,good.good_state,good.good_weight,good.good_destination,good.good_origin,
+               good.good_id
+        from `user`,good,order_good,(
+            select user_name,user_phone,consignee_id,order_id from `order`,`user`
+            where consignor_id = user_id
+        ) os
+        where os.consignee_id = `user`.user_id
+          and os.order_id = order_good.order_id
+          and order_good.good_id = good.good_id
+    </select>
+
+    <delete id="deleteOrderById">
+        delete from `order`
+        where order_id = #{order_id}
+    </delete>
+
+    <select id="findGoodIdByOrderId" resultType="java.lang.Integer">
+        select good_id from order_good where order_id = #{order_id}
+    </select>
+
 </mapper>

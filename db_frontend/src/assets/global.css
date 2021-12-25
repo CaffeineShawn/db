@@ -10,17 +10,17 @@ html,body,#app,.el-container,.el-header,.el-footer,.el-aside,.el-main{
   background: aliceblue;
 }
 .el-aside {
-  background: antiquewhite;
+  background: rgb(248, 248, 248);
   width: 10vw !important;
   min-width: 80px !important;
 }
 .el-main {
-  background: aquamarine;
+  background: rgb(255, 255, 255);
 
   width: 90vw !important;
 
 }
 .el-footer {
-  background: blueviolet;
+  background: rgb(197, 197, 197);
   height: 7vh !important;
 }

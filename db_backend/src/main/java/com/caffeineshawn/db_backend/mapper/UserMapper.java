@@ -14,5 +14,7 @@ public interface UserMapper {
 
     List<User> findAllUser(QueryInfo queryInfo);
 
+    List<User> findUsers();
+
     int findAllUserCount(String information);
 }
