@@ -5,19 +5,20 @@
 
 <mapper namespace="com.caffeineshawn.db_backend.mapper.OrderMapper">
 
-    <insert id="addOrder" useGeneratedKeys="true" keyProperty="order_id"
-            parameterType="java.lang.Integer">
-        insert into `order`(consignor_id, consignee_id)
-        values (#{consignor_id}, #{consignee_id})
+    <insert id="addOrder" useGeneratedKeys="true" keyProperty="order_id">
+        insert into `order`(consignor_id, consignee_id,order_destination,order_origin)
+        values (#{consignor_id}, #{consignee_id}, #{order_destination}, #{order_origin})
     </insert>
 
     <select id="findAllOrder" parameterType="com.caffeineshawn.db_backend.entity.QueryInfo"
             resultType="java.util.HashMap">
         select os.user_name consignor,os.user_phone consignor_phone,os.order_id,
-               `user`.user_name consignee,`user`.user_phone consignee_phone,good_name,
-               good.good_state
+               os.order_destination,os.order_origin,os.order_state,
+               `user`.user_name consignee,`user`.user_phone consignee_phone,
+               good.good_name
         from `user`,good,order_good,(
-            select user_name,user_phone,consignee_id,order_id from `order`,`user`
+            select user_name,user_phone,consignee_id,order_id,order_origin,order_destination,order_state
+            from `order`,`user`
             where consignor_id = user_id
         ) os
         where os.consignee_id = `user`.user_id
@@ -38,7 +39,8 @@
             resultType="java.lang.Integer">
         select count(*)
         from `user`,good,order_good,(
-        select user_name,user_phone,consignee_id,order_id from `order`,`user`
+        select user_name,user_phone,consignee_id,order_id,order_origin,order_destination,order_state
+        from `order`,`user`
         where consignor_id = user_id
         ) os
         where os.consignee_id = `user`.user_id
@@ -57,7 +59,7 @@
     <select id="findOrders" resultType="java.util.HashMap">
         select os.user_name consignor,os.user_phone consignor_phone,os.order_id,
                `user`.user_name consignee,`user`.user_phone consignee_phone,good_name,
-               good.good_price,good.good_state,good.good_weight,good.good_destination,good.good_origin,
+               good.good_price,good.good_weight,
                good.good_id
         from `user`,good,order_good,(
             select user_name,user_phone,consignee_id,order_id from `order`,`user`
@@ -77,4 +79,13 @@
         select good_id from order_good where order_id = #{order_id}
     </select>
 
+    <insert id="addOrderGood">
+        insert into order_good(order_id, good_id)
+        values (#{order_id}, #{good_id})
+    </insert>
+
+    <select id="findOrderById" resultType="com.caffeineshawn.db_backend.entity.Order">
+        select * from `order`
+        where order_id = #{order_id}
+    </select>
 </mapper>

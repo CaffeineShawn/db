@@ -17,4 +17,8 @@ public interface UserMapper {
     List<User> findUsers();
 
     int findAllUserCount(String information);
+
+    User findUserByNameAndPhone(User user);
+
+    int addUser(User user);
 }

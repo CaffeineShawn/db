@@ -21,4 +21,8 @@ public interface OrderMapper {
     int deleteOrderById(int order_id);
 
     int findGoodIdByOrderId(int order_id);
+
+    int addOrderGood(int order_id, int good_id);
+
+    Order findOrderById(int order_id);
 }

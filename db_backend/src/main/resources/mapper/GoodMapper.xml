@@ -7,8 +7,8 @@
 
     <insert id="addGood" useGeneratedKeys="true" keyProperty="good_id"
             parameterType="com.caffeineshawn.db_backend.entity.Good">
-        insert into good(good_name, good_weight, good_state, good_destination, good_origin)
-        values (#{good_name}, #{good_weight}, #{good_state}, #{good_destination}, #{good_origin})
+        insert into good(good_name, good_weight, good_price)
+        values (#{good_name}, #{good_weight}, #{good_price})
     </insert>
 
     <select id="findGoodById" resultType="com.caffeineshawn.db_backend.entity.Good">
@@ -19,9 +19,8 @@
 
     <update id="updateGoodInfo" parameterType="com.caffeineshawn.db_backend.entity.Good">
         update good
-        set good_state = #{good_state},good_price = #{good_price}, good_origin = #{good_origin},
-            good_weight = #{good_weight}, good_destination = #{good_destination},
-            good_name = #{good_name}
+        set good_state = #{good_state},good_price = #{good_price},
+            good_weight = #{good_weight},good_name = #{good_name}
         where good_id = #{good_id}
     </update>
 
@@ -35,5 +34,13 @@
             ) as temp
         )
     </delete>
+
+    <select id="findGoodByGoodInfo" parameterType="com.caffeineshawn.db_backend.entity.Good"
+        resultType="com.caffeineshawn.db_backend.entity.Good">
+        select * from good
+        where good_name = #{good_name}
+        and good_price = #{good_price}
+        and good_weight = #{good_weight}
+    </select>
 
 </mapper>

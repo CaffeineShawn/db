@@ -18,12 +18,18 @@
 
     <insert id="addUser" useGeneratedKeys="true" keyProperty="user_id"
             parameterType="com.caffeineshawn.db_backend.entity.User">
-        insert into user(user_name, user_gender, user_phone)
-        values (#{user_name}, #{user_gender}, #{user_phone})
+        insert into user(user_name, user_phone)
+        values (#{user_name}, #{user_phone})
     </insert>
 
     <select id="findUserById" resultMap="userMap">
         select * from user where user_id = #{user_id}
+    </select>
+
+    <select id="findUserByNameAndPhone" resultType="com.caffeineshawn.db_backend.entity.User">
+        select * from user where
+        user_name = #{user_name}
+        and user_phone = #{user_phone}
     </select>
 
     <select id="findAllUser" parameterType="com.caffeineshawn.db_backend.entity.QueryInfo"
@@ -50,6 +56,5 @@
         </if>
     </select>
 
-    
     
 </mapper>

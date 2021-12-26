@@ -5,9 +5,6 @@ public class Good {
     private String good_name;
     private double good_weight;
     private double good_price;
-    private String good_state;
-    private String good_destination;
-    private String good_origin;
 
 
     public int getGood_id() {
@@ -42,29 +39,6 @@ public class Good {
         this.good_price = good_price;
     }
 
-    public String getGood_state() {
-        return good_state;
-    }
-
-    public void setGood_state(String good_state) {
-        this.good_state = good_state;
-    }
-
-    public String getGood_destination() {
-        return good_destination;
-    }
-
-    public void setGood_destination(String good_destination) {
-        this.good_destination = good_destination;
-    }
-
-    public String getGood_origin() {
-        return good_origin;
-    }
-
-    public void setGood_origin(String good_origin) {
-        this.good_origin = good_origin;
-    }
 
     @Override
     public String toString() {
@@ -73,9 +47,6 @@ public class Good {
                 ", good_name='" + good_name + '\'' +
                 ", good_weight=" + good_weight +
                 ", good_price=" + good_price +
-                ", good_state='" + good_state + '\'' +
-                ", good_destination='" + good_destination + '\'' +
-                ", good_origin='" + good_origin + '\'' +
                 '}';
     }
 }

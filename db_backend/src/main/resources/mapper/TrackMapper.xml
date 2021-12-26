@@ -6,6 +6,7 @@
 <mapper namespace="com.caffeineshawn.db_backend.mapper.TrackMapper">
     <select id="findOrderTrack" resultType="com.caffeineshawn.db_backend.entity.Track">
         select * from track where order_id = #{order_id}
+        order by track.`current_time`
     </select>
 
     <insert id="addTrack" useGeneratedKeys="true" keyProperty="order_id" parameterType="com.caffeineshawn.db_backend.entity.Track">

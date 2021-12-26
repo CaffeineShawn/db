@@ -13,4 +13,6 @@ public interface GoodMapper {
     int updateGoodInfo(Good good);
 
     int deleteGoodByOrderId(int order_id);
+
+    Good findGoodByGoodInfo(Good good);
 }

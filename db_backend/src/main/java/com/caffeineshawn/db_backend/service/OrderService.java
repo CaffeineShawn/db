@@ -1,11 +1,10 @@
 package com.caffeineshawn.db_backend.service;
 
-import com.caffeineshawn.db_backend.entity.Order;
-import com.caffeineshawn.db_backend.entity.QueryInfo;
-import com.caffeineshawn.db_backend.entity.Track;
+import com.caffeineshawn.db_backend.entity.*;
 import com.caffeineshawn.db_backend.mapper.GoodMapper;
 import com.caffeineshawn.db_backend.mapper.OrderMapper;
 import com.caffeineshawn.db_backend.mapper.TrackMapper;
+import com.caffeineshawn.db_backend.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,7 +19,8 @@ public class OrderService {
     TrackMapper trackMapper;
     @Resource
     GoodMapper goodMapper;
-
+    @Resource
+    UserMapper userMapper;
 
     public int addOrder(Order order){
         return orderMapper.addOrder(order);
@@ -44,8 +44,44 @@ public class OrderService {
     }
 
     public int deleteOrderById(int order_id){
-        if(goodMapper.deleteGoodByOrderId(order_id) == 1 && orderMapper.deleteOrderById(order_id) == 1)
+        if(orderMapper.deleteOrderById(order_id) == 1)
             return 1;
         return 0;
+    }
+
+    public int addOrder(User consignor, User consignee, Good good, Order order){
+        User user = userMapper.findUserByNameAndPhone(consignor);
+        if(user == null){
+            userMapper.addUser(consignor);
+        }
+        else{
+            consignor = user;
+        }
+        user = userMapper.findUserByNameAndPhone(consignee);
+        if(user == null){
+            userMapper.addUser(consignee);
+        }
+        else {
+            consignee = user;
+        }
+        Good existingGood = goodMapper.findGoodByGoodInfo(good);
+        if(existingGood == null){
+            goodMapper.addGood(good);
+        }
+        else {
+            good = existingGood;
+        }
+        order.setConsignee_id(consignee.getUser_id());
+        order.setConsignor_id(consignor.getUser_id());
+        System.out.println(good);
+        System.out.println(order);
+        if(orderMapper.addOrder(order) == 1 && orderMapper.addOrderGood(order.getOrder_id(), good.getGood_id()) == 1){
+            return 1;
+        }
+        return 0;
+    }
+
+    public Order findOrderById(int order_id){
+        return orderMapper.findOrderById(order_id);
     }
 }
