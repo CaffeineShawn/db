@@ -21,11 +21,7 @@ public class TrackController {
 
     @PostMapping("/addTrack")
     public String addTrack(@RequestBody Track track){
-        Timestamp timestamp = new Timestamp(new Date().getTime());
-        track.setCurrent_time(timestamp);
-        if(trackService.addTrack(track)==1)
-            return "true";
-        else return "false";
+        return trackService.addTrack(track) == 1 ? "ok" : "error";
     }
 
     @GetMapping("/findTrack")

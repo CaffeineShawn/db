@@ -58,11 +58,12 @@
 
     <select id="findOrders" resultType="java.util.HashMap">
         select os.user_name consignor,os.user_phone consignor_phone,os.order_id,
-               `user`.user_name consignee,`user`.user_phone consignee_phone,good_name,
-               good.good_price,good.good_weight,
-               good.good_id
+               os.order_destination,os.order_origin,os.order_state,
+               `user`.user_name consignee,`user`.user_phone consignee_phone,
+               good.good_name,good.good_id,good.good_weight,good.good_price
         from `user`,good,order_good,(
-            select user_name,user_phone,consignee_id,order_id from `order`,`user`
+            select user_name,user_phone,consignee_id,order_id,order_origin,order_destination,order_state
+            from `order`,`user`
             where consignor_id = user_id
         ) os
         where os.consignee_id = `user`.user_id
