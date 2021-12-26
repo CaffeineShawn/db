@@ -25,4 +25,6 @@ public interface OrderMapper {
     int addOrderGood(int order_id, int good_id);
 
     Order findOrderById(int order_id);
+
+    int updateOrderInfo(Order order);
 }

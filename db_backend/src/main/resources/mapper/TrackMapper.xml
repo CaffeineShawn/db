@@ -48,4 +48,11 @@
         </where>
     </delete>
 
+    <delete id="deleteSpecificTrack" parameterType="com.caffeineshawn.db_backend.entity.Track">
+        delete from track
+        where order_id = #{order_id}
+        and current_location = #{current_location}
+        and `current_time` = #{current_time}
+    </delete>
+
 </mapper>

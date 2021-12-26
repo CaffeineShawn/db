@@ -3,6 +3,7 @@ package com.caffeineshawn.db_backend.controller;
 import com.alibaba.fastjson.JSON;
 import com.caffeineshawn.db_backend.entity.Good;
 import com.caffeineshawn.db_backend.service.GoodService;
+import com.caffeineshawn.db_backend.service.TrackService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -13,6 +14,8 @@ import java.util.HashMap;
 public class GoodController {
     @Resource
     GoodService goodService;
+    @Resource
+    TrackService trackService;
 
     @GetMapping("/findGoodById/{order_id}")
     public String findGoodById(@PathVariable int order_id){
@@ -22,7 +25,8 @@ public class GoodController {
         return JSON.toJSONString(map);
     }
 
-    @PutMapping("/updateGoodInfo")
+
+    @PostMapping("/updateGoodInfo")
     public String updateGoodInfo(@RequestBody Good good){
         if(goodService.updateGoodInfo(good) == 1)
             return "ok";

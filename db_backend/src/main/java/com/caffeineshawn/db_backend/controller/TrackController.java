@@ -1,17 +1,12 @@
 package com.caffeineshawn.db_backend.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.caffeineshawn.db_backend.entity.Order;
-import com.caffeineshawn.db_backend.entity.QueryInfo;
 import com.caffeineshawn.db_backend.entity.Track;
 import com.caffeineshawn.db_backend.service.TrackService;
 import org.springframework.web.bind.annotation.*;
-import java.sql.Timestamp;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.sql.Timestamp;
 
 @RestController
 @RequestMapping("/track")
@@ -43,5 +38,12 @@ public class TrackController {
         else return "false";
     }
 
+    @DeleteMapping("/deleteSpecificTrack")
+    public String deleteSpecificTrack(@RequestBody Track track){
+        System.out.println(track);
+        if(trackService.deleteSpecificTrack(track) == 1)
+            return "ok";
+        return "error";
+    }
 
 }

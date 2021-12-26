@@ -24,6 +24,7 @@
               style="margin-left: 10px; margin-top: 10px"
               icon="el-icon-plus"
               @click="addOrderDialogVisible = true"
+              round
             >
               添加订单
             </el-button>
@@ -87,21 +88,23 @@
                 type="primary is-plain"
                 icon="el-icon-box"
                 size="mini"
-                @click="showorderTrackDialog(scope.row.order_id)"
+                @click="showorderTrackDialog(scope.row)"
                 >物流信息</el-button
               >
               <el-button
-                type="primary is-plain"
+                type="info"
                 icon="el-icon-view"
                 size="mini"
                 @click="showEditOrderDialog(scope.row.order_id)"
-                >商品信息</el-button
+                plain
+                >订单信息</el-button
               >
               <el-button
-                type="primary is-plain"
+                type="danger"
                 icon="el-icon-delete"
                 size="mini"
                 @click="deleteOrderById(scope.row.order_id)"
+                plain
                 >删除订单</el-button
               >
             </template>
@@ -115,47 +118,101 @@
       title="物流信息"
       center
       :visible.sync="orderTrackDialogVisible"
-      width="30%"
+      width="45%"
     >
-      <div class="TrackBox">
-        查看方式:
-        <el-radio-group v-model="reverse">
-          <el-radio :label="true">倒序</el-radio>
-          <el-radio :label="false">正序</el-radio>
-        </el-radio-group>
-        <el-divider></el-divider>
-        <el-timeline :reverse="reverse">
-          <el-timeline-item
-            v-for="(item, index) in orderTrack"
-            :key="index"
-            :icon="getIcon(index)"
-            :color="getColor(index)"
-            :timestamp="dateFormat(item.current_time)"
-            placement="top"
-          >
-            <p v-if="index == 0">货物从{{ item.current_location }}出发</p>
-            <p v-else>货物到达{{ item.current_location }}</p>
-          </el-timeline-item>
-        </el-timeline>
+      <div class="trackBox" style="display: flex;">
+        <div class="track">
+          查看方式:
+          <el-radio-group v-model="reverse">
+            <el-radio :label="true">倒序</el-radio>
+            <el-radio :label="false">正序</el-radio>
+          </el-radio-group>
+          <el-divider></el-divider>
+          <el-timeline :reverse="reverse">
+            <el-timeline-item
+              v-for="(item, index) in orderTrack"
+              :key="index"
+              :icon="getIcon(index)"
+              :color="getColor(index)"
+              :timestamp="dateFormat(item.current_time)"
+              placement="top"
+            >
+            <span>
+              <p v-if="index == 0">货物从[{{ item.current_location }}]出发</p>
+              <p
+                v-else-if="
+                  item.current_location == orderTrack.order_destination
+                "
+              >
+                货物到达终点[{{ item.current_location }}]
+              </p>
+              <p v-else>货物到达[{{ item.current_location }}]</p>
+              <el-button type="danger" icon="el-icon-delete" circle size="mini" @click="deleteTrack(item)"></el-button>
+            </span>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+        <div class="addTrackInfo" style="margin-left: 15%">
+          <el-card class="addTrackInfoCard" style="text-align:right;">
+            <span>添加物流信息</span>
+            <el-divider></el-divider>
+            <el-form
+              ref="trackInfo"
+              :model="trackInfo"
+              label-width="auto"
+              label-position="auto"
+              :rules="rulesForGood"
+            >
+              <el-form-item label="日期:" prop="track_date">
+                <el-date-picker
+                  v-model="trackInfo.date"
+                  align="right"
+                  type="date"
+                  placeholder="选择日期"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  :picker-options="pickerOptions"
+                >
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="时间:" prop="track_time">
+                <el-time-picker
+                  v-model="trackInfo.time"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  placeholder="选择时间"
+                >
+                </el-time-picker>
+              </el-form-item>
+              <el-form-item label="地点" prop="current_location">
+                <el-input
+                  v-model="trackInfo.current_location"
+                  placeholder="请输入地点"
+                ></el-input>
+              </el-form-item>
+            </el-form>
+            <el-button type="mini" @click="addTrack" icon="el-icon-check" plain
+              >提 交</el-button
+            >
+          </el-card>
+        </div>
       </div>
-      <div></div>
     </el-dialog>
 
     <el-dialog
       class="OrderInfoBox"
       title="订单详情"
-      width="30%"
       :visible.sync="editOrderInfoDialogVisible"
       @close="clearGoodInfo"
     >
-    <div class="editOrderInfoBox" style="display: flex">
-      <el-card class="goodInfoCard">
-        <span>
+      <div class="editOrderInfoBox" style="display: flex">
+        <el-card class="editGoodInfoCard">
+          <span>货物信息</span>
+          <el-divider></el-divider>
           <el-form
             ref="existingGoodInfo"
             :model="goodInfo"
             label-width="100px"
-            label-position="left"
+            label-position="auto"
+            :rules="rulesForGood"
           >
             <el-form-item label="商品名:" prop="good_name">
               <el-input
@@ -169,6 +226,7 @@
                 type="textarea"
                 v-model="goodInfo.good_weight"
                 placeholder="请输入重量"
+                :change="check('weight')"
               ></el-input>
             </el-form-item>
             <el-form-item label="价格(¥):" prop="good_price">
@@ -176,18 +234,20 @@
                 type="textarea"
                 v-model="goodInfo.good_price"
                 placeholder="请输入价格"
+                :change="check('price')"
               ></el-input>
             </el-form-item>
           </el-form>
-        </span>
-      </el-card>
-      <el-card>
-        <span>
+        </el-card>
+        <el-card class="editOrderInfoCard">
+          <span>订单信息</span>
+          <el-divider></el-divider>
           <el-form
             ref="existingOrderInfo"
             :model="orderInfo"
             label-width="100px"
-            label-position="left"
+            label-position="auto"
+            :rules="rulesForOrder"
           >
             <el-form-item label="发货地点:" prop="order_origin">
               <el-input
@@ -214,14 +274,23 @@
               </el-select>
             </el-form-item>
           </el-form>
-        </span>
-      </el-card>
-    </div>
+        </el-card>
+      </div>
       <span slot="footer" class="goodInfoDialog-footer">
-        <el-button type="primary" @click="goodInfoDialogVisible = false"
+        <el-button
+          type="info"
+          @click="editOrderInfoDialogVisible = false"
+          icon="el-icon-back"
+          plain
           >取 消</el-button
         >
-        <el-button type="primary" @click="updateGoodInfo">修 改</el-button>
+        <el-button
+          type="primary"
+          @click="updateOrderInfo"
+          icon="el-icon-check"
+          plain
+          >修 改</el-button
+        >
       </span>
     </el-dialog>
 
@@ -335,10 +404,16 @@
         </el-card>
       </div>
       <span slot="footer">
-        <el-button type="primary" @click="addOrderDialogVisible = false"
+        <el-button
+          type="info"
+          @click="addOrderDialogVisible = false"
+          icon="el-icon-back"
+          plain
           >取 消</el-button
         >
-        <el-button type="primary" @click="addOrder">确 定</el-button>
+        <el-button type="primary" @click="addOrder" icon="el-icon-check" plain
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
 
@@ -374,9 +449,6 @@
 .el-pagination {
   text-align: center;
 }
-.TrackBox {
-  width: 15vw;
-}
 .consignorCard {
   background: rgb(122, 170, 150, 0.7);
 }
@@ -387,6 +459,16 @@
 .goodCard {
   background: rgb(182, 141, 141, 0.7);
   margin-left: 15px;
+}
+.editOrderInfoCard {
+  background: rgba(140, 175, 184, 0.7);
+  margin-left: 30px;
+}
+.editGoodInfoCard {
+  background: rgba(182, 142, 190, 0.7);
+}
+.addTrackInfoCard {
+  background: rgba(173, 190, 142, 0.7);
 }
 </style>
 
@@ -410,8 +492,16 @@ export default {
       orderInfo: {},
       consignor: {},
       consignee: {},
+      trackInfo: {},
       orderStateList: ['待发货', '已发货', '已送达'],
       addOrderDialogVisible: false,
+      value6: '',
+      startTime: '',
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
+      },
       rulesForUser: {
         user_name: [
           {
@@ -454,7 +544,7 @@ export default {
         good_name: [
           {
             required: true,
-            message: '请输入货物姓名',
+            message: '请输入货物名',
             trigger: 'blur'
           },
           {
@@ -474,6 +564,22 @@ export default {
           {
             required: true,
             message: '请输入货物价格',
+            trigger: 'blur'
+          }
+        ]
+      },
+      rulesForOrder: {
+        order_destination: [
+          {
+            required: true,
+            message: '请输入货物终点',
+            trigger: 'blur'
+          }
+        ],
+        order_origin: [
+          {
+            required: true,
+            message: '请输入货物起点',
             trigger: 'blur'
           }
         ]
@@ -510,11 +616,13 @@ export default {
       this.queryInfo.page = newPage
       this.getOrderList()
     },
-    async getorderTrack (id) {
+    async getOrderTrack (order) {
       await this.$http
-        .get('/order/findOrderTrack/' + id)
+        .get('/order/findOrderTrack/' + order.order_id)
         .then((result) => {
           this.orderTrack = result.data.res
+          this.orderTrack.order_destination = order.order_destination
+          this.orderTrack.order_id = order.order_id
         })
         .catch((err) => {
           console.log(err)
@@ -541,6 +649,43 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+    async addTrack () {
+      this.trackInfo.order_id = this.orderTrack.order_id
+      var date = '' + this.trackInfo.date
+      var time = '' + this.trackInfo.time
+      this.trackInfo.current_time =
+        date.slice(0, 10) + ' ' + time.slice(11, 19)
+      this.trackInfo.current_time = Date.parse(this.trackInfo.current_time)
+      await this.$http
+        .post('/track/addTrack', this.trackInfo)
+        .then((result) => {
+          if (result.data === 'ok') {
+            this.$message.success('添加成功')
+            this.getOrderTrack(this.orderTrack)
+            this.$forceUpdate()
+          } else {
+            this.$message.error('添加异常')
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    async deleteTrack (track) {
+      track.current_time = Date.parse(this.dateFormat(track.current_time))
+      console.log(track)
+      await this.$http.delete('/track/deleteSpecificTrack', {data: track}).then((result) => {
+        if (result.data === 'ok') {
+          this.$message.success('删除成功')
+          this.getOrderTrack(this.orderTrack)
+          this.$forceUpdate()
+        } else {
+          this.$message.error('删除异常')
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
     },
     async deleteOrderById (id) {
       const confirmRes = await this.$confirm(
@@ -612,24 +757,47 @@ export default {
         }
       })
     },
-    async updateGoodInfo () {
-      await this.$http
-        .put('good/updateGoodInfo', this.goodInfo)
-        .then((result) => {
-          if (result.data === 'ok') {
-            this.$message.success('修改成功')
-            this.getOrderList()
-            this.goodInfoDialogVisible = false
-          } else {
-            this.$message.error('修改失败')
-          }
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+    updateOrderInfo () {
+      this.$refs.existingGoodInfo.validate((valid) => {
+        if (valid) {
+          this.$refs.existingOrderInfo.validate(async (valid) => {
+            if (valid) {
+              await this.$http
+                .post('good/updateGoodInfo', this.goodInfo)
+                .then(async (result) => {
+                  if (result.data === 'ok') {
+                    await this.$http
+                      .post('order/updateOrderInfo', this.orderInfo)
+                      .then((result) => {
+                        if (result.data === 'ok') {
+                          this.$message.success('修改成功')
+                          this.getOrderList()
+                          this.editOrderInfoDialogVisible = false
+                        } else {
+                          return this.$message.error('修改异常')
+                        }
+                      })
+                      .catch((err) => {
+                        console.log(err)
+                      })
+                  } else {
+                    return this.$message.error('修改异常')
+                  }
+                })
+                .catch((err) => {
+                  console.log(err)
+                })
+            } else {
+              return this.$message.error('订单信息不完善或有误')
+            }
+          })
+        } else {
+          return this.$message.error('货物信息不完善或有误')
+        }
+      })
     },
-    showorderTrackDialog (id) {
-      this.getorderTrack(id)
+    showorderTrackDialog (order) {
+      this.getOrderTrack(order)
       this.orderTrackDialogVisible = true
     },
     showEditOrderDialog (id) {
@@ -707,7 +875,8 @@ export default {
       this.$refs.goodInfo.resetFields()
     },
     clearGoodInfo () {
-      this.goodInfo = {}
+      this.$refs.existingGoodInfo.resetFields()
+      this.$refs.existingOrderInfo.resetFields()
     }
   }
 }

@@ -89,4 +89,12 @@
         select * from `order`
         where order_id = #{order_id}
     </select>
+
+    <update id="updateOrderInfo" parameterType="com.caffeineshawn.db_backend.entity.Order">
+        update `order`
+        set order_state = #{order_state},
+            order_origin = #{order_origin},
+            order_destination = #{order_destination}
+        where order_id = #{order_id}
+    </update>
 </mapper>

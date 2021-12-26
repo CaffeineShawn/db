@@ -1,7 +1,5 @@
 package com.caffeineshawn.db_backend.mapper;
 
-import com.caffeineshawn.db_backend.entity.Order;
-import com.caffeineshawn.db_backend.entity.QueryInfo;
 import com.caffeineshawn.db_backend.entity.Track;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -19,5 +17,6 @@ public interface TrackMapper {
 
     int updateTrack(Track track);
 
+    int deleteSpecificTrack(Track track);
     int deleteTrack(int order_id, String current_location, Timestamp current_time);
 }

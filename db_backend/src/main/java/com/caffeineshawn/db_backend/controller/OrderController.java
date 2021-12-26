@@ -105,4 +105,11 @@ public class OrderController {
         map.put("res", order);
         return JSON.toJSONString(map);
     }
+
+    @PostMapping("/updateOrderInfo")
+    public String updateOrderInfo(@RequestBody Order order){
+        if(orderService.updateOrderInfo(order) == 1)
+            return "ok";
+        return "error";
+    }
 }
