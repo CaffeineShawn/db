@@ -30,4 +30,12 @@ public class UserService {
         return userMapper.findAllUserCount(queryInfo.getInformation());
     }
 
+    public int addUser(User user) {return  userMapper.addUser(user);
+    }
+
+    public int updateUser(User user) {return userMapper.updateUser(user);
+    }
+
+    public int deleteUser(int user_id) {return userMapper.deleteUser(user_id);
+    }
 }

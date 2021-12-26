@@ -31,4 +31,20 @@ public class UserController {
         List<User> users = userService.findUsers();
         return JSON.toJSONString(users);
     }
+
+    @PostMapping("/addUser")
+    public String addUser(@RequestBody User user){
+        return userService.addUser(user)==1 ? "true" : "false";
+    }
+
+    @PutMapping("/updateUser")
+    public String updateUser(@RequestBody User user){
+        return userService.updateUser(user)==1 ? "true" : "false";
+    }
+
+    @DeleteMapping("/deleteUser/{user_id}")
+    public String deleteUser(@PathVariable int user_id){
+        return userService.deleteUser(user_id)==1 ? "true" : "false";
+    }
+
 }

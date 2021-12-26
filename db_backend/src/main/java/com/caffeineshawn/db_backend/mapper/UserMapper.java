@@ -21,4 +21,8 @@ public interface UserMapper {
     User findUserByNameAndPhone(User user);
 
     int addUser(User user);
+
+    int updateUser(User user);
+
+    int deleteUser(int user_id);
 }
