@@ -19,7 +19,7 @@
 
     <update id="updateGoodInfo" parameterType="com.caffeineshawn.db_backend.entity.Good">
         update good
-        set good_state = #{good_state},good_price = #{good_price},
+        set good_price = #{good_price},
             good_weight = #{good_weight},good_name = #{good_name}
         where good_id = #{good_id}
     </update>
