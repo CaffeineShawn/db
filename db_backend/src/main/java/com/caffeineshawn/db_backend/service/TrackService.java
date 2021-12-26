@@ -7,6 +7,7 @@ import com.caffeineshawn.db_backend.mapper.TrackMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -24,7 +25,7 @@ public class TrackService {
         return  trackMapper.updateTrack(track);
     }
 
-    public int deleteTrack(int order_id) {
-        return trackMapper.deleteTrack(order_id);
+    public int deleteTrack(int order_id, String current_location, Timestamp current_time) {
+        return trackMapper.deleteTrack(order_id,current_location,current_time);
     }
 }

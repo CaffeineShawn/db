@@ -31,19 +31,21 @@
 
     <update id="updateTrack" parameterType="com.caffeineshawn.db_backend.entity.Track">
         update track
-        <set>
-            <if test="current_location != null and current_location != '' ">
-                current_location = #{current_location},
-            </if>
-            <if test="current_time != null and current_time != '' ">
-                `current_time` = #{current_time},
-            </if>
-        </set>
-            where order_id = #{order_id}
+        set current_location = #{current_location},`current_time` = #{current_time}
+        where order_id = #{order_id}
     </update>
 
     <delete id="deleteTrack">
-        delete from track where order_id = #{order_id}
+        delete from track
+        <where>
+                order_id = #{order_id}
+            <if test="current_location != null and current_location != '' ">
+                and current_location = #{current_location}
+            </if>
+            <if test="current_time != null and current_time != '' ">
+                and `current_time` = #{current_time}
+            </if>
+        </where>
     </delete>
 
 </mapper>

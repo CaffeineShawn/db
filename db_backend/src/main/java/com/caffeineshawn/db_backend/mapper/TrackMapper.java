@@ -5,6 +5,7 @@ import com.caffeineshawn.db_backend.entity.QueryInfo;
 import com.caffeineshawn.db_backend.entity.Track;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Mapper
@@ -18,5 +19,5 @@ public interface TrackMapper {
 
     int updateTrack(Track track);
 
-    int deleteTrack(int order_id);
+    int deleteTrack(int order_id, String current_location, Timestamp current_time);
 }

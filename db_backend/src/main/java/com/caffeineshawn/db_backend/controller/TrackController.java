@@ -24,23 +24,21 @@ public class TrackController {
         return trackService.addTrack(track) == 1 ? "ok" : "error";
     }
 
-    @GetMapping("/findTrack")
+    @PostMapping("/findTrack")
     public String findTrack(@RequestBody Track track){
         return JSON.toJSONString(trackService.findTrack(track));
     }
 
     @PutMapping("/updateTrack")
     public String updateTrack(@RequestBody Track track){
-        Timestamp timestamp = new Timestamp(new Date().getTime());
-        track.setCurrent_time(timestamp);
         if(trackService.updateTrack(track)==1)
             return "true";
         else return "false";
     }
 
-    @DeleteMapping("/deleteTrack/{order_id}")
-    public String deleteTrack(@PathVariable int order_id) {
-        if(trackService.deleteTrack(order_id)==1)
+    @DeleteMapping ("/deleteTrack/{order_id}/{current_location}/{current_time}")
+    public String deleteOneTrack(@PathVariable int order_id,@PathVariable String current_location,@PathVariable Timestamp current_time){
+        if(trackService.deleteTrack(order_id,current_location,current_time)>0)
             return "true";
         else return "false";
     }
