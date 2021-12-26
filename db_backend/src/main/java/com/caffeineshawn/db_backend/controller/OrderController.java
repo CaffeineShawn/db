@@ -74,6 +74,30 @@ public class OrderController {
         return "error";
     }
 
+    @PostMapping("/addOrderWithTonsOfData")
+    public String addOrderWithTonsOfData(@RequestBody HashMap map) {
+        User consignor = new User();
+        consignor.setUser_name((String) map.get("consignor"));
+        consignor.setUser_phone((String) map.get("consignor_phone"));
+
+        User consignee = new User();
+        consignee.setUser_name((String) map.get("consignee"));
+        consignee.setUser_phone((String) map.get("consignee_phone"));
+
+
+        String jsonString = JSON.toJSONString(map);
+        Good good = JSON.parseObject(jsonString, Good.class);
+        Order order = JSON.parseObject(jsonString, Order.class);
+        System.out.println(map.toString());
+        System.out.println(consignee);
+        System.out.println(consignor);
+
+        return orderService.addOrder(consignor, consignee, good, order) == 1 ? "ok" : "error";
+
+    }
+
+
+
     @GetMapping("/findOrderById/{order_id}")
     public String findOrderById(@PathVariable int order_id){
         Order order = orderService.findOrderById(order_id);
