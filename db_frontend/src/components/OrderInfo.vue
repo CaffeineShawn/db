@@ -119,6 +119,7 @@
       center
       :visible.sync="orderTrackDialogVisible"
       width="45%"
+      @close="orderTrackDialogClosed"
     >
       <div class="trackBox" style="display: flex;">
         <div class="track">
@@ -148,22 +149,23 @@
               </p>
               <p v-else>货物到达[{{ item.current_location }}]</p>
               <el-button type="danger" icon="el-icon-delete" circle size="mini" @click="deleteTrack(item)"></el-button>
+              <el-button type="info" icon="el-icon-edit" circle size="mini" @click="deliverTrack(item)"></el-button>
             </span>
             </el-timeline-item>
           </el-timeline>
         </div>
         <div class="addTrackInfo" style="margin-left: 15%">
           <el-card class="addTrackInfoCard" style="text-align:right;">
-            <span>添加物流信息</span>
+            <span style="float:left">添加物流信息</span>
             <el-divider></el-divider>
             <el-form
               ref="trackInfo"
               :model="trackInfo"
               label-width="auto"
               label-position="auto"
-              :rules="rulesForGood"
+              :rules="rulesForTrack"
             >
-              <el-form-item label="日期:" prop="track_date">
+              <el-form-item label="日期:" prop="date">
                 <el-date-picker
                   v-model="trackInfo.date"
                   align="right"
@@ -174,7 +176,7 @@
                 >
                 </el-date-picker>
               </el-form-item>
-              <el-form-item label="时间:" prop="track_time">
+              <el-form-item label="时间:" prop="time">
                 <el-time-picker
                   v-model="trackInfo.time"
                   value-format="yyyy-MM-dd HH:mm:ss"
@@ -189,6 +191,9 @@
                 ></el-input>
               </el-form-item>
             </el-form>
+            <el-button type="mini" @click="updateTrack" icon="el-icon-check" plain style="float:left"
+              >更 新</el-button
+            >
             <el-button type="mini" @click="addTrack" icon="el-icon-check" plain
               >提 交</el-button
             >
@@ -492,7 +497,16 @@ export default {
       orderInfo: {},
       consignor: {},
       consignee: {},
-      trackInfo: {},
+      trackInfo: {
+        time: '',
+        date: '',
+        current_location: ''
+      },
+      oldTrackInfo: {
+        time: '',
+        date: '',
+        current_location: ''
+      },
       orderStateList: ['待发货', '已发货', '已送达'],
       addOrderDialogVisible: false,
       value6: '',
@@ -583,13 +597,38 @@ export default {
             trigger: 'blur'
           }
         ]
+      },
+      rulesForTrack: {
+        time: [
+          {
+            required: true,
+            message: '请输入日期',
+            trigger: 'change'
+          }
+        ],
+        date: [
+          {
+            required: true,
+            message: '请输入时间',
+            trigger: 'change'
+          }
+        ],
+        current_location: [
+          {
+            required: true,
+            message: '请输入地点',
+            trigger: 'change'
+          },
+          {
+            max: 254,
+            message: '地点名过长',
+            trigger: 'blur'
+          }
+        ]
       }
     }
   },
   created () {
-    // if (this.$route.query.user_id != null) {
-    //   this.getUserOrder(this.$route.query.user_id)
-    // }
     this.getOrderList()
   },
   methods: {
@@ -650,27 +689,33 @@ export default {
           console.log(err)
         })
     },
-    async addTrack () {
-      this.trackInfo.order_id = this.orderTrack.order_id
-      var date = '' + this.trackInfo.date
-      var time = '' + this.trackInfo.time
-      this.trackInfo.current_time =
-        date.slice(0, 10) + ' ' + time.slice(11, 19)
-      this.trackInfo.current_time = Date.parse(this.trackInfo.current_time)
-      await this.$http
-        .post('/track/addTrack', this.trackInfo)
-        .then((result) => {
-          if (result.data === 'ok') {
-            this.$message.success('添加成功')
-            this.getOrderTrack(this.orderTrack)
-            this.$forceUpdate()
-          } else {
-            this.$message.error('添加异常')
-          }
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+    addTrack () {
+      this.$refs.trackInfo.validate(async (valid) => {
+        if (valid) {
+          this.trackInfo.order_id = this.orderTrack.order_id
+          var date = '' + this.trackInfo.date
+          var time = '' + this.trackInfo.time
+          this.trackInfo.current_time = Date.parse(date.slice(0, 10) + ' ' + time.slice(11, 19))
+          await this.$http
+            .post('/track/addTrack', this.trackInfo)
+            .then((result) => {
+              if (result.data === 'ok') {
+                this.$message.success('添加成功')
+                this.getOrderTrack(this.orderTrack)
+                this.$forceUpdate()
+              } else if (result.data === 'existing') {
+                this.$message.info('存在相同数据')
+              } else {
+                this.$message.error('添加异常')
+              }
+            })
+            .catch((err) => {
+              console.log(err)
+            })
+        } else {
+          this.$message.error('信息不完善或有误')
+        }
+      })
     },
     async deleteTrack (track) {
       track.current_time = Date.parse(this.dateFormat(track.current_time))
@@ -685,6 +730,45 @@ export default {
         }
       }).catch((err) => {
         console.log(err)
+      })
+    },
+    deliverTrack (track) {
+      var timeInfo = this.dateFormat(track.current_time)
+      this.oldTrackInfo.date = this.oldTrackInfo.time = timeInfo
+      this.trackInfo.date = this.trackInfo.time = timeInfo
+      this.oldTrackInfo.current_location = this.trackInfo.current_location = track.current_location
+    },
+    async updateTrack () {
+      this.$refs.trackInfo.validate(async (valid) => {
+        if (valid) {
+          this.oldTrackInfo.order_id = this.trackInfo.order_id = this.orderTrack.order_id
+          var date = '' + this.trackInfo.date
+          var time = '' + this.trackInfo.time
+          this.trackInfo.current_time = Date.parse(date.slice(0, 10) + ' ' + time.slice(11, 19))
+          date = '' + this.oldTrackInfo.date
+          time = '' + this.oldTrackInfo.time
+          this.oldTrackInfo.current_time = Date.parse(date.slice(0, 10) + ' ' + time.slice(11, 19))
+          var tracksInfo = {
+            oldTrackInfo: this.oldTrackInfo,
+            newTrackInfo: this.trackInfo
+          }
+          this.$http.post('/track/updateTrack', tracksInfo).then((result) => {
+            if (result.data === 'ok') {
+              this.$message.success('更新成功')
+              this.getOrderTrack(this.orderTrack)
+              this.oldTrackInfo.time = this.trackInfo.time
+              this.oldTrackInfo.date = this.trackInfo.date
+              this.oldTrackInfo.current_location = this.trackInfo.current_location
+              this.$forceUpdate()
+            } else {
+              this.$message.error('更新异常')
+            }
+          }).catch((err) => {
+            console.log(err)
+          })
+        } else {
+          this.$message.error('信息不完善或有误')
+        }
       })
     },
     async deleteOrderById (id) {
@@ -877,6 +961,13 @@ export default {
     clearGoodInfo () {
       this.$refs.existingGoodInfo.resetFields()
       this.$refs.existingOrderInfo.resetFields()
+    },
+    orderTrackDialogClosed () {
+      this.trackInfo = {
+        time: '',
+        date: '',
+        current_location: ''
+      }
     }
   }
 }

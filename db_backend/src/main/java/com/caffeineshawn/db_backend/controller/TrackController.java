@@ -6,7 +6,7 @@ import com.caffeineshawn.db_backend.service.TrackService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.sql.Timestamp;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/track")
@@ -16,6 +16,8 @@ public class TrackController {
 
     @PostMapping("/addTrack")
     public String addTrack(@RequestBody Track track){
+        if(trackService.findTrack(track) != null)
+            return "existing";
         return trackService.addTrack(track) == 1 ? "ok" : "error";
     }
 
@@ -24,23 +26,21 @@ public class TrackController {
         return JSON.toJSONString(trackService.findTrack(track));
     }
 
-    @PutMapping("/updateTrack")
-    public String updateTrack(@RequestBody Track track){
-        if(trackService.updateTrack(track)==1)
-            return "true";
-        else return "false";
-    }
-
-    @DeleteMapping ("/deleteTrack/{order_id}/{current_location}/{current_time}")
-    public String deleteOneTrack(@PathVariable int order_id,@PathVariable String current_location,@PathVariable Timestamp current_time){
-        if(trackService.deleteTrack(order_id,current_location,current_time)>0)
-            return "true";
-        else return "false";
+    @PostMapping("/updateTrack")
+    public String updateTrack(@RequestBody HashMap param){
+        String oldTrackJson = JSON.toJSONString(param.get("oldTrackInfo"));
+        String newTrackJson = JSON.toJSONString(param.get("newTrackInfo"));
+        Track oldTrack = JSON.parseObject(oldTrackJson, Track.class);
+        Track newTrack = JSON.parseObject(newTrackJson, Track.class);
+        System.out.println(oldTrack);
+        System.out.println(newTrack);
+        if(trackService.updateTrack(oldTrack, newTrack) == 0)
+            return "error";
+        return "ok";
     }
 
     @DeleteMapping("/deleteSpecificTrack")
     public String deleteSpecificTrack(@RequestBody Track track){
-        System.out.println(track);
         if(trackService.deleteSpecificTrack(track) == 1)
             return "ok";
         return "error";

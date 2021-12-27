@@ -14,38 +14,18 @@
         values (#{order_id},#{current_location},#{current_time})
     </insert>
 
-    <select id="findTrack" resultType="com.caffeineshawn.db_backend.entity.Track">
+    <select id="findTrack" parameterType="com.caffeineshawn.db_backend.entity.Track"
+        resultType="com.caffeineshawn.db_backend.entity.Track">
         select * from track
-        <where>
-        <if test="order_id != null and order_id != '' ">
-            and order_id = #{order_id}
-        </if>
-        <if test="current_location != null and current_location != '' ">
-            and current_location = #{current_location}
-        </if>
-        <if test="current_time != null and current_time != '' ">
-            and `current_time` = #{current_time}
-        </if>
-        </where>
-    </select>
-
-    <update id="updateTrack" parameterType="com.caffeineshawn.db_backend.entity.Track">
-        update track
-        set current_location = #{current_location},`current_time` = #{current_time}
         where order_id = #{order_id}
-    </update>
+        and current_location = #{current_location}
+        and `current_time` = #{current_time}
+
+    </select>
 
     <delete id="deleteTrack">
         delete from track
-        <where>
-                order_id = #{order_id}
-            <if test="current_location != null and current_location != '' ">
-                and current_location = #{current_location}
-            </if>
-            <if test="current_time != null and current_time != '' ">
-                and `current_time` = #{current_time}
-            </if>
-        </where>
+        where order_id = #{order_id}
     </delete>
 
     <delete id="deleteSpecificTrack" parameterType="com.caffeineshawn.db_backend.entity.Track">
@@ -54,5 +34,12 @@
         and current_location = #{current_location}
         and `current_time` = #{current_time}
     </delete>
+
+    <update id="updateTrack" parameterType="com.caffeineshawn.db_backend.entity.Track">
+        update track
+        set `current_time` = #{newTrack.current_time}, current_location = #{newTrack.current_location}
+        where `current_time` = #{oldTrack.current_time}
+        and current_location = #{oldTrack.current_location}
+    </update>
 
 </mapper>
