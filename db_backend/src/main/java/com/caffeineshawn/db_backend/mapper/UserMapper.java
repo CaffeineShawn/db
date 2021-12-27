@@ -25,4 +25,10 @@ public interface UserMapper {
     int updateUser(User user);
 
     int deleteUser(int user_id);
+
+    int login(User user);
+
+    List<Integer> findUserByName(String user_name);
+
+    String confirmPassword(Integer user_id);
 }

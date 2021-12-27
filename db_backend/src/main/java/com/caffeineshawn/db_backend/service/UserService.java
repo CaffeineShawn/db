@@ -38,4 +38,16 @@ public class UserService {
 
     public int deleteUser(int user_id) {return userMapper.deleteUser(user_id);
     }
+
+    public int login(User user) {return userMapper.login(user);
+    }
+
+    public List<Integer> findUsersByName(String user_name) {
+        return userMapper.findUserByName(user_name);
+    }
+
+    public String confirmPassword(Integer user_id) {
+        return userMapper.confirmPassword(user_id);
+    }
 }
+

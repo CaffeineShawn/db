@@ -49,4 +49,25 @@ public class UserController {
         return userService.deleteUser(user_id)==1 ? "true" : "false";
     }
 
+    @PostMapping("/login")
+    public Integer login(@RequestBody User user){
+        List<Integer> userList = userService.findUsersByName(user.getUser_name());
+        if(userList.size()==1) {
+            String password = userService.confirmPassword(userList.get(0));
+            return password.equals(user.getUser_password()) ? userList.get(0) : -100;
+        }
+        else if(userList.size()==0){
+            return -200;
+        }
+        else{
+            for (int me : userList) {
+                String password = userService.confirmPassword(me);
+                if(password.equals(user.getUser_password()))
+                    return me;
+            }
+        }
+        return -100;
+    }
+
+
 }
