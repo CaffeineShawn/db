@@ -111,4 +111,13 @@ public class OrderController {
             return "ok";
         return "error";
     }
+
+    @PutMapping("/updateOrder")
+    public String updateOrder(@RequestBody HashMap map) {
+        Order order = orderService.findOrderById((Integer) map.get("order_id"));
+        order.setOrder_origin((String) map.get("order_origin"));
+        order.setOrder_state((String) map.get("order_state"));
+        order.setOrder_destination((String) map.get("order_destination"));
+        return orderService.updateOrderInfo(order) == 1 ? "ok" : "error";
+    }
 }
