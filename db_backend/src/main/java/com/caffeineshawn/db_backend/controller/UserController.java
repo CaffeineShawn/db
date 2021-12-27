@@ -39,6 +39,8 @@ public class UserController {
 
     @PutMapping("/updateUser")
     public String updateUser(@RequestBody User user){
+
+        System.out.println(user);
         return userService.updateUser(user)==1 ? "true" : "false";
     }
 
