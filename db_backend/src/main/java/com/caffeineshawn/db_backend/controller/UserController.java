@@ -1,6 +1,7 @@
 package com.caffeineshawn.db_backend.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.caffeineshawn.db_backend.entity.Order;
 import com.caffeineshawn.db_backend.entity.QueryInfo;
 import com.caffeineshawn.db_backend.entity.User;
 import com.caffeineshawn.db_backend.service.UserService;
@@ -25,6 +26,14 @@ public class UserController {
         map.put("total", count);
         return JSON.toJSONString(map);
     }
+    @GetMapping("/findUserById/{user_id}")
+    public String findUserById(@PathVariable int user_id){
+        User user = userService.findUserById(user_id);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("res", user);
+        return JSON.toJSONString(map);
+    }
+
 
     @GetMapping("/findUsers")
     public String findUsers() {

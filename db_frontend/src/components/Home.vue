@@ -1,8 +1,6 @@
 <template>
   <el-container>
-    <el-header>
-      <header class="header">header</header>
-    </el-header>
+     <el-header><v-head></v-head></el-header>
     <el-container>
       <el-aside width="auto">
         <el-menu class="navMenu" :router="true" unique-opened>
@@ -43,8 +41,13 @@
 // import footer from '../basic/footer'
 // import header from '../basic/header'
 // import main from '../basic/main'
-
+ import vHead from '../basic/header.vue';
 export default {
   name: "test",
+
+       components: {
+            vHead,
+
+        },
 };
 </script>

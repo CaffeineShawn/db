@@ -4,17 +4,20 @@
       <header class="header">
         <el-row type="flex">
           <el-col :span="6">
-           <el-input
-            placeholder="请输入搜索的信息"
-            v-model="queryInfo.information"
-            clearable
-            @clear="getUserList"
-          >
-            <el-button slot="append" icon="el-icon-search" @click="getUserList"
-              >搜索</el-button
+            <el-input
+              placeholder="请输入搜索的信息"
+              v-model="queryInfo.information"
+              clearable
+              @clear="getUserList"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="getUserList"
+                >搜索</el-button
               >
-          </el-input>
-         </el-col>
+            </el-input>
+          </el-col>
         </el-row>
       </header>
     </el-header>
@@ -28,27 +31,82 @@
             label="序号"
             width="60px"
           ></el-table-column>
-          <el-table-column label="用户名" prop="user_name"></el-table-column>
-          <el-table-column label="用户号码" prop="user_phone"></el-table-column>
+          <el-table-column
+            label="用户名"
+            prop="user_name"
+            width="200px"
+          ></el-table-column>
+          <el-table-column
+            label="用户号码"
+            prop="user_phone"
+            width="450px"
+          ></el-table-column>
           <el-table-column
             label="用户性别"
             prop="user_gender"
+            width="150px"
           ></el-table-column>
-          <!-- <el-table-column label="用户订单">
+          <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button
-                type="primary"
-                icon="el-icon-view"
+                type="primary is-plain"
+                icon="el-icon-box"
                 size="mini"
-                @click="getUserOrder(scope.row.user_id)"
-                >查看用户订单</el-button
+                @click="showuserDialog(scope.row)"
+                >修改密码</el-button
+              >
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                size="mini"
+                @click="deleteuserById(scope.row.user_id)"
+                plain
+                >删除用户</el-button
               >
             </template>
-          </el-table-column> -->
+          </el-table-column>
         </el-table>
       </main>
     </el-main>
 
+    <el-dialog
+      title="修改密码"
+      :visible.sync="showuser"
+      center
+      width="25%"
+      :destroy-on-close="true"
+    >
+      <el-form ref="form" :model="changeform">
+        <el-form-item label="用户名：" label-width="100px" prop="userName">
+          <el-input
+            v-model="userInfo.user_name"
+            placeholder="username"
+            style="width: auto"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="新密码：" label-width="100px" prop="password">
+          <el-input
+            type="password"
+            v-model="userInfo.user_password"
+            :label-width="formLabelWidth"
+            placeholder="请输入新密码"
+            style="width: auto"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="新电话号码：" label-width="100px" prop="phone">
+          <el-input
+            v-model="userInfo.user_phone"
+            :label-width="formLabelWidth"
+            placeholder="请输入新电话号码"
+            style="width: auto"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="showuser = false">取 消</el-button>
+        <el-button type="primary" @click="update">修改</el-button>
+      </div>
+    </el-dialog>
     <el-footer>
       <el-pagination
         @size-change="handleSizeChange"
@@ -75,13 +133,15 @@
 }
 .el-table {
   border-radius: 10px;
+  /* margin-left: 30px; */
+  margin-right: 30px;
 }
 .el-input {
   top: 10px;
   left: 30px;
 }
-.el-pagination{
-    text-align: center;
+.el-pagination {
+  text-align: center;
 }
 </style>
 
@@ -89,15 +149,27 @@
 export default {
   data () {
     return {
+      showuser: false,
       isConsignor: true,
+      userInfo: {
+        user_id: '',
+        user_password: '',
+        user_gender: '',
+        user_pohne: ''
+      },
       ButtonInfo: '查看收件',
       userList: [],
+      changeform: {
+        username: '',
+        password: ''
+      },
       queryInfo: {
         information: '',
         page: 1,
         size: 5
       },
-      total: 0
+      total: 0,
+      formLabelWidth: '100px'
     }
   },
   created () {
@@ -107,14 +179,25 @@ export default {
     async getUserList () {
       await this.$http
         .post('/user/findAllUser', this.queryInfo)
-        .then((result) => {
+        .then(result => {
           this.userList = result.data.res
           this.total = result.data.total
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err)
         })
     },
+    // async getUserInfo (id) {
+    //   await this.$http
+    //     .get('/user/findUserById/' + id)
+    //     .then(result => {
+    //       this.userInfo = result.data.res
+    //       console.log(result)
+    //     })
+    //     .catch(err => {
+    //       console.log(err)
+    //     })
+    // },
     indexMethod (index) {
       return (this.queryInfo.page - 1) * this.queryInfo.size + 1 + index
     },
@@ -125,6 +208,56 @@ export default {
     handleCurrentChange (newPage) {
       this.queryInfo.page = newPage
       this.getUserList()
+    },
+
+    showuserDialog (user) {
+      this.userInfo.user_id = user.user_id
+      this.userInfo.user_name = user.user_name
+      this.userInfo.user_gender = user.user_gender
+      this.userInfo.user_password = user.user_password
+      this.userInfo.user_pohne = user.user_pohne
+      this.showuser = true
+    },
+    async update () {
+      let userInfo = this.userInfo
+      await this.$http
+        .put('/user/updateUser', userInfo)
+        .then(res => {
+          console.log(res)
+
+          this.$message.success('修改成功')
+          this.getUserList()
+          this.showuser = false
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    async deleteuserById (id) {
+      const confirmRes = await this.$confirm(
+        '确认删除该用户？该操作不可逆',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
+      if (confirmRes !== 'confirm') return this.$message.info('已取消删除')
+      await this.$http
+        .delete('/user/deleteUser/' + id)
+        .then(result => {
+          if (result.data === 'ok') {
+            this.$message.success('删除成功')
+            this.getUserList()
+          } else {
+            this.$message.success('删除异常')
+            this.getUserList()
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
     // getUserOrder (id) {
     //   this.$router.push({
