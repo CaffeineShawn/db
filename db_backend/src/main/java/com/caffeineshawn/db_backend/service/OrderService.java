@@ -48,7 +48,7 @@ public class OrderService {
 
     @Transactional
     public int deleteOrderById(int order_id){
-        if(orderMapper.deleteOrderById(order_id) == 1 && trackMapper.deleteTrack(order_id) == 1)
+        if(orderMapper.deleteOrderById(order_id) == 1)
             return 1;
         return 0;
     }

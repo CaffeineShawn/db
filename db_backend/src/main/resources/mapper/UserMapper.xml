@@ -71,6 +71,9 @@
             <if test="user_phone != '' and user_phone != null">
                 user_phone=#{user_phone}
             </if>
+            <if test="user_role != '' and user_role != null">
+                user_role=#{user_role}
+            </if>
         </set>
         where user_id=#{user_id}
     </update>

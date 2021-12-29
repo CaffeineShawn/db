@@ -8,6 +8,7 @@ public class User {
     private String user_password;
     private String user_gender;
     private String user_phone;
+    private int user_role;
     private List<Order> orderList;
 
     public int getUser_id() {
@@ -50,6 +51,14 @@ public class User {
         this.user_phone = user_phone;
     }
 
+    public int getUser_role() {
+        return user_role;
+    }
+
+    public void setUser_role(int user_role) {
+        this.user_role = user_role;
+    }
+
     public List<Order> getOrderList() {
         return orderList;
     }
@@ -66,6 +75,7 @@ public class User {
                 ", user_password='" + user_password + '\'' +
                 ", user_gender='" + user_gender + '\'' +
                 ", user_phone='" + user_phone + '\'' +
+                ", user_role=" + user_role +
                 ", orderList=" + orderList +
                 '}';
     }
