@@ -29,9 +29,7 @@ public class UserController {
     @GetMapping("/findUserById/{user_id}")
     public String findUserById(@PathVariable int user_id){
         User user = userService.findUserById(user_id);
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("res", user);
-        return JSON.toJSONString(map);
+        return JSON.toJSONString(user);
     }
 
 
