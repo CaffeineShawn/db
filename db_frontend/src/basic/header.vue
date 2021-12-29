@@ -11,7 +11,7 @@
         <div class="header-user-con">
           <!-- 用户头像 -->
           <div class="user-avator">
-            <img src="../assets/2.jpg" />
+            <img src="../assets/3.jpg" />
           </div>
           <!-- 用户名下拉菜单 -->
           <el-dropdown
@@ -20,9 +20,10 @@
             @command="handleCommand"
           >
             <span class="el-dropdown-link">
-              {{ username }}
+              {{ this.$store.getters.getuser.user_name }}
               <i class="el-icon-caret-bottom"></i>
             </span>
+
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item divided command="loginout"
                 >退出登录</el-dropdown-item
@@ -40,6 +41,19 @@ export default {
   name: 'header',
   data () {
     return {
+      user: {
+        user_id: '',
+        user_password: '',
+        user_gender: '',
+        user_phone: '',
+        user_role: ''
+      },
+      changeform1: {
+        username: '',
+        password: ''
+      },
+      formLabelWidth: '100px',
+      showuser1: false,
       collapse: false,
       fullscreen: false,
       name: ''
@@ -55,8 +69,12 @@ export default {
     // 用户名下拉菜单选择事件
     handleCommand (command) {
       if (command === 'loginout') {
-        sessionStorage.removeItem('ms_username')
-        sessionStorage.removeItem('token')
+        this.$store.getters.getuser.user_name = ''
+        this.$store.getters.getuser.user_id = null
+        this.$store.getters.getuser.user_gender = ''
+        this.$store.getters.getuser.user_password = ''
+        this.$store.getters.getuser.user_phone = ''
+        this.$store.getters.getuser.user_role = null
         this.$router.push('/login')
       }
     },
@@ -77,7 +95,7 @@ export default {
   position: relative;
   box-sizing: border-box;
   width: 100%;
-  height: 70px;
+  height: 60px;
   font-size: 22px;
   color: rgb(0, 0, 0);
 }
@@ -94,12 +112,15 @@ export default {
 }
 .header-right {
   float: right;
+  height: 60px;
   padding-right: 50px;
 }
 .header-user-con {
   display: flex;
-  height: 70px;
+  height: 60px;
   align-items: center;
+  margin: 0;
+  padding: 0;
 }
 .btn-fullscreen {
   transform: rotate(45deg);
