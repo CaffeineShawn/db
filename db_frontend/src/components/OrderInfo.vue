@@ -25,6 +25,7 @@
               icon="el-icon-plus"
               @click="addOrderDialogVisible = true"
               round
+              v-if="this.$store.getters.getuser.user_role === 1"
             >
               添加订单
             </el-button>
@@ -82,7 +83,7 @@
             label="终点"
             prop="order_destination"
           ></el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="操作" v-if="this.$store.getters.getuser.user_role === 1">
             <template slot-scope="scope">
               <el-button
                 type="primary is-plain"
@@ -109,6 +110,25 @@
               >
             </template>
           </el-table-column>
+           <el-table-column label="操作" v-if="this.$store.getters.getuser.user_role === 0">
+            <template slot-scope="scope">
+              <el-button
+                type="primary is-plain"
+                icon="el-icon-box"
+                size="mini"
+                @click="showorderTrackDialog(scope.row)"
+                >物流信息</el-button
+              >
+              <el-button
+                type="info"
+                icon="el-icon-view"
+                size="mini"
+                @click="showEditOrderDialog(scope.row.order_id)"
+                plain
+                >订单信息</el-button
+              >
+            </template>
+          </el-table-column>
         </el-table>
       </main>
     </el-main>
@@ -120,6 +140,7 @@
       :visible.sync="orderTrackDialogVisible"
       width="45%"
       @close="orderTrackDialogClosed"
+      v-if="this.$store.getters.getuser.user_role === 1"
     >
       <div class="trackBox" style="display: flex;">
         <div class="track">
@@ -138,19 +159,31 @@
               :timestamp="dateFormat(item.current_time)"
               placement="top"
             >
-            <span>
-              <p v-if="index == 0">货物从[{{ item.current_location }}]出发</p>
-              <p
-                v-else-if="
-                  item.current_location == orderTrack.order_destination
-                "
-              >
-                货物到达终点[{{ item.current_location }}]
-              </p>
-              <p v-else>货物到达[{{ item.current_location }}]</p>
-              <el-button type="danger" icon="el-icon-delete" circle size="mini" @click="deleteTrack(item)"></el-button>
-              <el-button type="info" icon="el-icon-edit" circle size="mini" @click="deliverTrack(item)"></el-button>
-            </span>
+              <span>
+                <p v-if="index == 0">货物从[{{ item.current_location }}]出发</p>
+                <p
+                  v-else-if="
+                    item.current_location == orderTrack.order_destination
+                  "
+                >
+                  货物到达终点[{{ item.current_location }}]
+                </p>
+                <p v-else>货物到达[{{ item.current_location }}]</p>
+                <el-button
+                  type="danger"
+                  icon="el-icon-delete"
+                  circle
+                  size="mini"
+                  @click="deleteTrack(item)"
+                ></el-button>
+                <el-button
+                  type="info"
+                  icon="el-icon-edit"
+                  circle
+                  size="mini"
+                  @click="deliverTrack(item)"
+                ></el-button>
+              </span>
             </el-timeline-item>
           </el-timeline>
         </div>
@@ -191,13 +224,61 @@
                 ></el-input>
               </el-form-item>
             </el-form>
-            <el-button type="mini" @click="updateTrack" icon="el-icon-check" plain style="float:left"
+            <el-button
+              type="mini"
+              @click="updateTrack"
+              icon="el-icon-check"
+              plain
+              style="float:left"
               >更 新</el-button
             >
             <el-button type="mini" @click="addTrack" icon="el-icon-check" plain
               >提 交</el-button
             >
           </el-card>
+        </div>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      class="orderTrack"
+      title="物流信息"
+      center
+      :visible.sync="orderTrackDialogVisible"
+      width="30%"
+      @close="orderTrackDialogClosed"
+      v-if="this.$store.getters.getuser.user_role === 0"
+    >
+      <div class="trackBox" style="display: flex;">
+        <div class="track">
+          查看方式:
+          <el-radio-group v-model="reverse">
+            <el-radio :label="true">倒序</el-radio>
+            <el-radio :label="false">正序</el-radio>
+          </el-radio-group>
+          <el-divider></el-divider>
+          <el-timeline :reverse="reverse">
+            <el-timeline-item
+              v-for="(item, index) in orderTrack"
+              :key="index"
+              :icon="getIcon(index)"
+              :color="getColor(index)"
+              :timestamp="dateFormat(item.current_time)"
+              placement="top"
+            >
+              <span>
+                <p v-if="index == 0">货物从[{{ item.current_location }}]出发</p>
+                <p
+                  v-else-if="
+                    item.current_location == orderTrack.order_destination
+                  "
+                >
+                  货物到达终点[{{ item.current_location }}]
+                </p>
+                <p v-else>货物到达[{{ item.current_location }}]</p>
+              </span>
+            </el-timeline-item>
+          </el-timeline>
         </div>
       </div>
     </el-dialog>
@@ -281,7 +362,8 @@
           </el-form>
         </el-card>
       </div>
-      <span slot="footer" class="goodInfoDialog-footer">
+      <span slot="footer" class="goodInfoDialog-footer"
+        v-if="this.$store.getters.getuser.user_role === 1">
         <el-button
           type="info"
           @click="editOrderInfoDialogVisible = false"
@@ -633,16 +715,33 @@ export default {
   },
   methods: {
     async getOrderList () {
-      await this.$http
-        .post('/order/findAllOrder', this.queryInfo)
-        .then((result) => {
-          this.orderList = result.data.res
-          this.total = result.data.total
-          console.log(result)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+      if (this.$store.getters.getuser.user_role === 1) {
+        await this.$http
+          .post('/order/findAllOrder', this.queryInfo)
+          .then(result => {
+            this.orderList = result.data.res
+            this.total = result.data.total
+            console.log(result)
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
+      if (this.$store.getters.getuser.user_role === 0) {
+        this.queryInfo.information = this.$store.getters.getuser.user_name
+
+        await this.$http
+          .post('/order/findAllOrder', this.queryInfo)
+          .then(result => {
+            this.orderList = result.data.res
+            this.total = result.data.total
+            console.log(result)
+            this.queryInfo.information = ''
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
     },
     indexMethod (index) {
       return (this.queryInfo.page - 1) * this.queryInfo.size + 1 + index
@@ -658,47 +757,49 @@ export default {
     async getOrderTrack (order) {
       await this.$http
         .get('/order/findOrderTrack/' + order.order_id)
-        .then((result) => {
+        .then(result => {
           this.orderTrack = result.data.res
           this.orderTrack.order_destination = order.order_destination
           this.orderTrack.order_id = order.order_id
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err)
         })
     },
     async getgoodInfo (id) {
       await this.$http
         .get('/good/findGoodById/' + id)
-        .then((result) => {
+        .then(result => {
           this.goodInfo = result.data.res
           console.log(result)
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err)
         })
     },
     async getOrderInfo (id) {
       await this.$http
         .get('/order/findOrderById/' + id)
-        .then((result) => {
+        .then(result => {
           this.orderInfo = result.data.res
           console.log(result)
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err)
         })
     },
     addTrack () {
-      this.$refs.trackInfo.validate(async (valid) => {
+      this.$refs.trackInfo.validate(async valid => {
         if (valid) {
           this.trackInfo.order_id = this.orderTrack.order_id
           var date = '' + this.trackInfo.date
           var time = '' + this.trackInfo.time
-          this.trackInfo.current_time = Date.parse(date.slice(0, 10) + ' ' + time.slice(11, 19))
+          this.trackInfo.current_time = Date.parse(
+            date.slice(0, 10) + ' ' + time.slice(11, 19)
+          )
           await this.$http
             .post('/track/addTrack', this.trackInfo)
-            .then((result) => {
+            .then(result => {
               if (result.data === 'ok') {
                 this.$message.success('添加成功')
                 this.getOrderTrack(this.orderTrack)
@@ -709,7 +810,7 @@ export default {
                 this.$message.error('添加异常')
               }
             })
-            .catch((err) => {
+            .catch(err => {
               console.log(err)
             })
         } else {
@@ -720,89 +821,105 @@ export default {
     async deleteTrack (track) {
       track.current_time = Date.parse(this.dateFormat(track.current_time))
       console.log(track)
-      await this.$http.delete('/track/deleteSpecificTrack', {data: track}).then((result) => {
-        if (result.data === 'ok') {
-          this.$message.success('删除成功')
-          this.getOrderTrack(this.orderTrack)
-          this.$forceUpdate()
-        } else {
-          this.$message.error('删除异常')
-        }
-      }).catch((err) => {
-        console.log(err)
-      })
+      await this.$http
+        .delete('/track/deleteSpecificTrack', { data: track })
+        .then(result => {
+          if (result.data === 'ok') {
+            this.$message.success('删除成功')
+            this.getOrderTrack(this.orderTrack)
+            this.$forceUpdate()
+          } else {
+            this.$message.error('删除异常')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     deliverTrack (track) {
       var timeInfo = this.dateFormat(track.current_time)
       this.oldTrackInfo.date = this.oldTrackInfo.time = timeInfo
       this.trackInfo.date = this.trackInfo.time = timeInfo
-      this.oldTrackInfo.current_location = this.trackInfo.current_location = track.current_location
+      this.oldTrackInfo.current_location = this.trackInfo.current_location =
+        track.current_location
     },
     async updateTrack () {
-      this.$refs.trackInfo.validate(async (valid) => {
+      this.$refs.trackInfo.validate(async valid => {
         if (valid) {
           this.oldTrackInfo.order_id = this.trackInfo.order_id = this.orderTrack.order_id
           var date = '' + this.trackInfo.date
           var time = '' + this.trackInfo.time
-          this.trackInfo.current_time = Date.parse(date.slice(0, 10) + ' ' + time.slice(11, 19))
+          this.trackInfo.current_time = Date.parse(
+            date.slice(0, 10) + ' ' + time.slice(11, 19)
+          )
           date = '' + this.oldTrackInfo.date
           time = '' + this.oldTrackInfo.time
-          this.oldTrackInfo.current_time = Date.parse(date.slice(0, 10) + ' ' + time.slice(11, 19))
+          this.oldTrackInfo.current_time = Date.parse(
+            date.slice(0, 10) + ' ' + time.slice(11, 19)
+          )
           var tracksInfo = {
             oldTrackInfo: this.oldTrackInfo,
             newTrackInfo: this.trackInfo
           }
-          this.$http.post('/track/updateTrack', tracksInfo).then((result) => {
-            if (result.data === 'ok') {
-              this.$message.success('更新成功')
-              this.getOrderTrack(this.orderTrack)
-              this.oldTrackInfo.time = this.trackInfo.time
-              this.oldTrackInfo.date = this.trackInfo.date
-              this.oldTrackInfo.current_location = this.trackInfo.current_location
-              this.$forceUpdate()
-            } else {
-              this.$message.error('更新异常')
-            }
-          }).catch((err) => {
-            console.log(err)
-          })
+          this.$http
+            .post('/track/updateTrack', tracksInfo)
+            .then(result => {
+              if (result.data === 'ok') {
+                this.$message.success('更新成功')
+                this.getOrderTrack(this.orderTrack)
+                this.oldTrackInfo.time = this.trackInfo.time
+                this.oldTrackInfo.date = this.trackInfo.date
+                this.oldTrackInfo.current_location = this.trackInfo.current_location
+                this.$forceUpdate()
+              } else {
+                this.$message.error('更新异常')
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
         } else {
           this.$message.error('信息不完善或有误')
         }
       })
     },
     async deleteOrderById (id) {
-      const confirmRes = await this.$confirm(
-        '确认删除该订单？该操作不可逆',
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-      ).catch((err) => err)
-      if (confirmRes !== 'confirm') return this.$message.info('已取消删除')
-      await this.$http
-        .delete('/order/deleteOrderById/' + id)
-        .then((result) => {
-          if (result.data === 'ok') {
-            this.$message.success('删除成功')
-            this.getOrderList()
-          } else {
-            this.$message.success('删除异常')
-            this.getOrderList()
+      if (this.$store.getters.getuser.user_role === 1) {
+        const confirmRes = await this.$confirm(
+          '确认删除该订单？该操作不可逆',
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
           }
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+        ).catch(err => err)
+        if (confirmRes !== 'confirm') return this.$message.info('已取消删除')
+        await this.$http
+          .delete('/order/deleteOrderById/' + id)
+          .then(result => {
+            if (result.data === 'ok') {
+              this.$message.success('删除成功')
+              this.getOrderList()
+            } else {
+              this.$message.error('删除异常')
+              this.getOrderList()
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
+      if (this.$store.getters.getuser.user_role === 0) {
+        this.$message.error('用户无权删除订单')
+      }
     },
     addOrder () {
-      this.$refs.consignorInfo.validate((valid) => {
+      this.$refs.consignorInfo.validate(valid => {
         if (valid) {
-          this.$refs.consigneeInfo.validate((valid) => {
+          this.$refs.consigneeInfo.validate(valid => {
             if (valid) {
-              this.$refs.goodInfo.validate(async (valid) => {
+              this.$refs.goodInfo.validate(async valid => {
                 if (valid) {
                   var orderInfo = {
                     consignor: this.consignor,
@@ -816,7 +933,7 @@ export default {
                   console.log(orderInfo)
                   await this.$http
                     .post('/order/addOrder', orderInfo)
-                    .then((result) => {
+                    .then(result => {
                       if (result.data === 'ok') {
                         this.$message.success('添加成功')
                         this.getOrderList()
@@ -825,7 +942,7 @@ export default {
                         this.$message.error('添加异常')
                       }
                     })
-                    .catch((err) => {
+                    .catch(err => {
                       console.log(err)
                     })
                 } else {
@@ -842,17 +959,17 @@ export default {
       })
     },
     updateOrderInfo () {
-      this.$refs.existingGoodInfo.validate((valid) => {
+      this.$refs.existingGoodInfo.validate(valid => {
         if (valid) {
-          this.$refs.existingOrderInfo.validate(async (valid) => {
+          this.$refs.existingOrderInfo.validate(async valid => {
             if (valid) {
               await this.$http
                 .post('good/updateGoodInfo', this.goodInfo)
-                .then(async (result) => {
+                .then(async result => {
                   if (result.data === 'ok') {
                     await this.$http
                       .post('order/updateOrderInfo', this.orderInfo)
-                      .then((result) => {
+                      .then(result => {
                         if (result.data === 'ok') {
                           this.$message.success('修改成功')
                           this.getOrderList()
@@ -861,14 +978,14 @@ export default {
                           return this.$message.error('修改异常')
                         }
                       })
-                      .catch((err) => {
+                      .catch(err => {
                         console.log(err)
                       })
                   } else {
                     return this.$message.error('修改异常')
                   }
                 })
-                .catch((err) => {
+                .catch(err => {
                   console.log(err)
                 })
             } else {

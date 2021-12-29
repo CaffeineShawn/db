@@ -220,6 +220,7 @@ export default {
               return res.user_id === this.$store.getters.getuser.user_id
             })
             this.total = result.data.total
+            this.queryInfo.information = ''
           })
           .catch(err => {
             console.log(err)
