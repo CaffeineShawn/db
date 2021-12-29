@@ -22,7 +22,7 @@
         values (#{user_name}, #{user_phone})
     </insert>
 
-    <select id="findUserById" resultMap="userMap">
+    <select id="findUserById" resultType="com.caffeineshawn.db_backend.entity.User">
         select * from user where user_id = #{user_id}
     </select>
 
