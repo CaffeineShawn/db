@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="ms-login">
-      <div class="ms-title">考试系统</div>
+      <div class="ms-title">物流管理系统</div>
       <el-form
         ref="form"
         :model="loginform"
@@ -88,6 +88,8 @@
 </template>
 
 <script>
+// import storage from '../store/storage.js'
+
 export default {
   name: 'Login',
   props: {
@@ -98,7 +100,7 @@ export default {
       showlogin: true,
       loginform: {
         username: 'as',
-        password: '1234',
+        password: '123',
         region: ''
       },
       registerform: {
@@ -126,11 +128,20 @@ export default {
       await this.$http.post('/user/login', user).then(res => {
         console.log('detail', res)
         if (res.data > 0) {
+          this.$http.get('/user/findUserById/' + res.data).then(res => {
+            console.log('user', res)
+            this.$store.getters.getuser.user_name = res.data.user_name
+            this.$store.getters.getuser.user_id = res.data.user_id
+            this.$store.getters.getuser.user_password = res.data.user_password
+            this.$store.getters.getuser.user_gender = res.data.user_gender
+            this.$store.getters.getuser.user_phone = res.data.user_phone
+            this.$store.getters.getuser.user_role = res.data.user_role
+          })
           this.$message({
             message: '登录成功',
             type: 'success'
           })
-          this.$store.commit('setuser', res.data)
+          console.log('用户', this.$store.getters.getuser)
           this.$router.push('/home')
         } else {
           this.$message({

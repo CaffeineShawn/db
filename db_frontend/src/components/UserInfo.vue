@@ -46,14 +46,19 @@
             prop="user_gender"
             width="150px"
           ></el-table-column>
+          <el-table-column
+            label="用户权限"
+            prop="user_role"
+            width="150px"
+          ></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button
                 type="primary is-plain"
-                icon="el-icon-box"
+                icon="el-icon-lock"
                 size="mini"
                 @click="showuserDialog(scope.row)"
-                >修改密码</el-button
+                >修改信息</el-button
               >
               <el-button
                 type="danger"
@@ -72,32 +77,51 @@
     <el-dialog
       title="修改密码"
       :visible.sync="showuser"
-      center
       width="25%"
+      center
       :destroy-on-close="true"
     >
-      <el-form ref="form" :model="changeform">
-        <el-form-item label="用户名：" label-width="100px" prop="userName">
+      <el-form ref="form" :model="changeform" label-width="100px">
+        <el-form-item label="用户名：" prop="userName">
           <el-input
             v-model="userInfo.user_name"
             placeholder="username"
             style="width: auto"
           ></el-input>
         </el-form-item>
-        <el-form-item label="新密码：" label-width="100px" prop="password">
+        <el-form-item label="新密码：" prop="password">
           <el-input
-            type="password"
             v-model="userInfo.user_password"
             :label-width="formLabelWidth"
             placeholder="请输入新密码"
             style="width: auto"
           ></el-input>
         </el-form-item>
-        <el-form-item label="新电话号码：" label-width="100px" prop="phone">
+        <el-form-item label="用户性别：" prop="gender">
+          <el-input
+            v-model="userInfo.user_gender"
+            :label-width="formLabelWidth"
+            placeholder="请设置性别"
+            style="width: auto"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="新电话号码：" prop="phone">
           <el-input
             v-model="userInfo.user_phone"
             :label-width="formLabelWidth"
             placeholder="请输入新电话号码"
+            style="width: auto"
+          ></el-input>
+        </el-form-item>
+        <el-form-item
+          label="用户权限："
+          prop="phone"
+          v-if="this.$store.getters.getuser.user_role === 1"
+        >
+          <el-input
+            v-model="userInfo.user_role"
+            :label-width="formLabelWidth"
+            placeholder="权限设置"
             style="width: auto"
           ></el-input>
         </el-form-item>
@@ -137,8 +161,6 @@
   margin-right: 30px;
 }
 .el-input {
-  top: 10px;
-  left: 30px;
 }
 .el-pagination {
   text-align: center;
@@ -155,7 +177,8 @@ export default {
         user_id: '',
         user_password: '',
         user_gender: '',
-        user_pohne: ''
+        user_pohne: '',
+        user_role: ''
       },
       ButtonInfo: '查看收件',
       userList: [],
@@ -177,27 +200,32 @@ export default {
   },
   methods: {
     async getUserList () {
-      await this.$http
-        .post('/user/findAllUser', this.queryInfo)
-        .then(result => {
-          this.userList = result.data.res
-          this.total = result.data.total
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      if (this.$store.getters.getuser.user_role === 1) {
+        await this.$http
+          .post('/user/findAllUser', this.queryInfo)
+          .then(result => {
+            this.userList = result.data.res
+            this.total = result.data.total
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
+      if (this.$store.getters.getuser.user_role === 0) {
+        this.queryInfo.information = this.$store.getters.getuser.user_name
+        await this.$http
+          .post('/user/findAllUser', this.queryInfo)
+          .then(result => {
+            this.userList = result.data.res.filter(res => {
+              return res.user_id === this.$store.getters.getuser.user_id
+            })
+            this.total = result.data.total
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
     },
-    // async getUserInfo (id) {
-    //   await this.$http
-    //     .get('/user/findUserById/' + id)
-    //     .then(result => {
-    //       this.userInfo = result.data.res
-    //       console.log(result)
-    //     })
-    //     .catch(err => {
-    //       console.log(err)
-    //     })
-    // },
     indexMethod (index) {
       return (this.queryInfo.page - 1) * this.queryInfo.size + 1 + index
     },
@@ -234,30 +262,36 @@ export default {
         })
     },
     async deleteuserById (id) {
-      const confirmRes = await this.$confirm(
-        '确认删除该用户？该操作不可逆',
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-      ).catch(err => err)
-      if (confirmRes !== 'confirm') return this.$message.info('已取消删除')
-      await this.$http
-        .delete('/user/deleteUser/' + id)
-        .then(result => {
-          if (result.data === 'ok') {
-            this.$message.success('删除成功')
-            this.getUserList()
-          } else {
-            this.$message.success('删除异常')
-            this.getUserList()
+      if (this.$store.getters.getuser.user_role === 1) {
+        const confirmRes = await this.$confirm(
+          '确认删除该用户？该操作不可逆',
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
           }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+        ).catch(err => err)
+        if (confirmRes !== 'confirm') return this.$message.info('已取消删除')
+        await this.$http
+          .delete('/user/deleteUser/' + id)
+          .then(result => {
+            if (!result.data) {
+              this.$message.error('删除失败')
+              this.getUserList()
+            } else {
+              this.$message.success('删除成功')
+              console.log(result.data)
+              this.getUserList()
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
+      if (this.$store.getters.getuser.user_role === 0) {
+        this.$message.error('没有权限删除用户')
+      }
     }
     // getUserOrder (id) {
     //   this.$router.push({

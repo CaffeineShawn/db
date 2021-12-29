@@ -1,6 +1,6 @@
 <template>
   <el-container>
-     <el-header><v-head></v-head></el-header>
+     <el-header class="header"><v-head></v-head></el-header>
     <el-container>
       <el-aside width="auto">
         <el-menu class="navMenu" :router="true" unique-opened>
@@ -27,6 +27,9 @@
 <style scoped>
 .el-footer {
   background: gray;
+}
+.header{
+  height: 60px;
 }
 
 .navMenu el-menu, .el-aside {

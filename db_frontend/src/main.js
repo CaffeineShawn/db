@@ -5,7 +5,7 @@ import App from './App'
 import router from './router'
 import './plugins/element.js'
 import axios from 'axios'
-
+import store from './store/index'
 /* eslint-disable no-new */
 
 // 添加全局样式
@@ -22,5 +22,6 @@ axios.defaults.baseURL = 'http://localhost:8085'
 
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')
