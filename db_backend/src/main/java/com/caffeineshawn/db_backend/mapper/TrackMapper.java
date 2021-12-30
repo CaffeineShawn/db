@@ -19,4 +19,6 @@ public interface TrackMapper {
     int updateTrack(Track oldTrack, Track newTrack);
 
     int deleteTrack(int order_id);
+
+    List<Track> findAllTrack();
 }

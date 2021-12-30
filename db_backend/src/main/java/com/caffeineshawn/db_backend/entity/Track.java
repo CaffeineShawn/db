@@ -1,10 +1,16 @@
 package com.caffeineshawn.db_backend.entity;
 
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.caffeineshawn.db_backend.converter.TimestampConverter;
+
 import java.sql.Timestamp;
 
 public class Track {
+    @ExcelProperty("订单号")
     private int order_id;
+    @ExcelProperty("地点")
     private String current_location;
+    @ExcelProperty(value = "时间", converter = TimestampConverter.class)
     private java.sql.Timestamp current_time;
 
     public int getOrder_id() {

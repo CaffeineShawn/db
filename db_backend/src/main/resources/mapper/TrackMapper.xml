@@ -20,7 +20,6 @@
         where order_id = #{order_id}
         and current_location = #{current_location}
         and `current_time` = #{current_time}
-
     </select>
 
     <delete id="deleteTrack">
@@ -32,14 +31,17 @@
         delete from track
         where order_id = #{order_id}
         and current_location = #{current_location}
-        and `current_time` = #{current_time}
     </delete>
 
     <update id="updateTrack" parameterType="com.caffeineshawn.db_backend.entity.Track">
         update track
         set `current_time` = #{newTrack.current_time}, current_location = #{newTrack.current_location}
-        where `current_time` = #{oldTrack.current_time}
+        where order_id = #{oldTrack.order_id}
         and current_location = #{oldTrack.current_location}
     </update>
 
+    <select id="findAllTrack" resultType="com.caffeineshawn.db_backend.entity.Track">
+        select *
+        from track
+    </select>
 </mapper>

@@ -41,7 +41,7 @@ public class TrackController {
 
     @DeleteMapping("/deleteSpecificTrack")
     public String deleteSpecificTrack(@RequestBody Track track){
-        if(trackService.deleteSpecificTrack(track) == 1)
+        if(trackService.deleteSpecificTrack(track) > 0)
             return "ok";
         return "error";
     }

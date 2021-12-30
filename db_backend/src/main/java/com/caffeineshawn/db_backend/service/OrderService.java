@@ -1,5 +1,8 @@
 package com.caffeineshawn.db_backend.service;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.caffeineshawn.db_backend.entity.*;
 import com.caffeineshawn.db_backend.mapper.GoodMapper;
 import com.caffeineshawn.db_backend.mapper.OrderMapper;
@@ -9,9 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -29,7 +34,7 @@ public class OrderService {
         return orderMapper.addOrder(order);
     }
 
-    public List<HashMap> findAllOrder(QueryInfo queryInfo){
+    public List<OrderInfoExcel> findAllOrder(QueryInfo queryInfo){
         queryInfo.setPage((queryInfo.getPage() - 1) * queryInfo.getSize());
         return orderMapper.findAllOrder(queryInfo);
     }
@@ -97,4 +102,32 @@ public class OrderService {
     public int updateOrderInfo(Order order){
         return orderMapper.updateOrderInfo(order);
     }
+
+    public void exportOrder(HttpServletResponse response){
+        try {
+            //设置返回的数据格式
+            response.setContentType("application/vnd.ms-excel");
+            //设置返回的数据编码
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+            String fileName = URLEncoder.encode("订单数据", "UTF-8");
+            response.setHeader("Content-disposition", "attachment;filename="+ fileName + ".xlsx");
+            QueryInfo queryInfo = new QueryInfo();
+            List<OrderInfoExcel> orderRes = orderMapper.findAllOrder(queryInfo);
+            List<Track> orderTrackRes = trackMapper.findAllTrack();
+
+            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
+            WriteSheet mainSheet = EasyExcel.writerSheet(0, "订单数据").head(OrderInfoExcel.class).build();
+            excelWriter.write(orderRes, mainSheet);
+
+            WriteSheet trackSheet = EasyExcel.writerSheet(1, "订单物流数据").head(Track.class).build();
+            excelWriter.write(orderTrackRes, trackSheet);
+//            EasyExcel.write(response.getOutputStream(),OrderInfoExcel.class).sheet("订单物流数据")
+//                    .doWrite(orderRes);
+            excelWriter.finish();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

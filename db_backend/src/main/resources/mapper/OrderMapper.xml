@@ -11,11 +11,11 @@
     </insert>
 
     <select id="findAllOrder" parameterType="com.caffeineshawn.db_backend.entity.QueryInfo"
-            resultType="java.util.HashMap">
+            resultType="com.caffeineshawn.db_backend.entity.OrderInfoExcel">
         select os.user_name consignor,os.user_phone consignor_phone,os.order_id,
                os.order_destination,os.order_origin,os.order_state,
                `user`.user_name consignee,`user`.user_phone consignee_phone,
-               good.good_name
+               good.*
         from `user`,good,order_good,(
             select user_name,user_phone,consignee_id,order_id,order_origin,order_destination,order_state
             from `order`,`user`
@@ -32,7 +32,9 @@
             or `user`.user_phone like concat('%', #{information}, '%')
           )
         </if>
-        limit #{page},#{size}
+        <if test="page != '' and page != null and size != '' and page != null">
+            limit #{page},#{size}
+        </if>
     </select>
 
     <select id="findAllOrderCount" parameterType="com.caffeineshawn.db_backend.entity.QueryInfo"
