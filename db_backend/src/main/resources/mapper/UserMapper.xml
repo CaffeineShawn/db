@@ -10,6 +10,7 @@
         <result property="user_name" column="user_name"/>
         <result property="user_password" column="user_password"/>
         <result property="user_gender" column="user_gender"/>
+        <result property="user_role" column="user_role"/>
         <collection property="orderList"
                     ofType="com.caffeineshawn.db_backend.entity.Order"
                     column="user_id"
@@ -20,6 +21,12 @@
             parameterType="com.caffeineshawn.db_backend.entity.User">
         insert into user(user_name, user_phone)
         values (#{user_name}, #{user_phone})
+    </insert>
+
+    <insert id="addAllUser" useGeneratedKeys="true" keyProperty="user_id"
+            parameterType="com.caffeineshawn.db_backend.entity.User">
+        insert into user(user_name, user_password, user_gender, user_phone, user_role)
+        values (#{user_name}, #{user_password},#{user_gender},#{user_phone},#{user_role})
     </insert>
 
     <select id="findUserById" resultType="com.caffeineshawn.db_backend.entity.User">
@@ -69,7 +76,7 @@
                 user_gender=#{user_gender},
             </if>
             <if test="user_phone != '' and user_phone != null">
-                user_phone=#{user_phone}
+                user_phone=#{user_phone},
             </if>
             <if test="user_role != '' and user_role != null">
                 user_role=#{user_role}

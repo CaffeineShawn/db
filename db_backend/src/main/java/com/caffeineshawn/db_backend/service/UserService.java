@@ -49,5 +49,9 @@ public class UserService {
     public String confirmPassword(Integer user_id) {
         return userMapper.confirmPassword(user_id);
     }
+
+    public int addAllUser(User user) {
+        return userMapper.addAllUser(user);
+    }
 }
 

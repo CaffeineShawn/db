@@ -31,4 +31,6 @@ public interface UserMapper {
     List<Integer> findUserByName(String user_name);
 
     String confirmPassword(Integer user_id);
+
+    int addAllUser(User user);
 }
