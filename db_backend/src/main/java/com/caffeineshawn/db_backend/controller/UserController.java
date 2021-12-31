@@ -8,6 +8,7 @@ import com.caffeineshawn.db_backend.entity.User;
 import com.caffeineshawn.db_backend.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -98,7 +99,7 @@ public class UserController {
             List<User> userList = new ArrayList<User>();
 
             try {
-                FileInputStream fio = new FileInputStream(filePath.getImportPath());
+                FileInputStream fio = new FileInputStream(filePath.getPath());
                 HSSFWorkbook workbook = new HSSFWorkbook(fio);
                 HSSFSheet sheet = workbook.getSheetAt(0);
 
@@ -157,7 +158,7 @@ public class UserController {
             }
 
             try {
-                FileOutputStream fos = new FileOutputStream(filePath.getExportPath());
+                FileOutputStream fos = new FileOutputStream(filePath.getPath());
                 workbook.write(fos);
                 workbook.close();
                 fos.close();

@@ -1,9 +1,9 @@
-<template>
+<template xmlns:el-col="http://www.w3.org/1999/html">
   <el-container>
     <el-header>
       <header class="header">
         <el-row type="flex">
-          <el-col :span="6">
+          <el-col :span="8">
             <el-input
               placeholder="请输入搜索的信息"
               v-model="queryInfo.information"
@@ -18,10 +18,56 @@
               >
             </el-input>
           </el-col>
+          <el-col>
+            <el-button
+              style="margin-left: 10px"
+              icon="el-icon-document"
+              v-if="this.$store.getters.getuser.user_role === 1"
+              @click="inputFileInfoVisible=true"
+            >导入导出用户</el-button
+            >
+          </el-col>
         </el-row>
       </header>
     </el-header>
-
+    <el-dialog
+      class="FileInfoBox"
+      title="导入导出用户"
+      :visible.sync="inputFileInfoVisible"
+      @close="clearFileInfo">
+    <div class="filePathInfo" style="margin-left: 0%">
+        <el-form
+          ref=filePathInfo
+          :model="filePathInfo"
+          label-width="auto"
+          label-position="auto"
+          :rules="rulesForFilePath">
+          <el-form-item label="文件路径" prop="path">
+            <el-input
+              v-model="filePathInfo.path"
+              placeholder="输入绝对路径"
+            ></el-input>
+          </el-form-item>
+          <p style="margin-bottom: 40px">
+          </p>
+          <el-button
+            type="primary"
+            @click="exportfilePath(filePathInfo)"
+            icon="el-icon-download"
+            plain
+            style="float: right"
+          >导出</el-button
+          >
+          <el-button
+            type="primary"
+            @click="importfilePath(filePathInfo)"
+            icon="el-icon-upload"
+            plain
+            style="float: left"
+          >导入</el-button>
+        </el-form>
+    </div>
+    </el-dialog>
     <el-main>
       <main class="main">
         <el-table ref="userTable" :data="userList" border stripe>
@@ -180,6 +226,9 @@ export default {
         user_pohne: '',
         user_role: ''
       },
+      filePathInfo: {
+        path: ''
+      },
       ButtonInfo: '查看收件',
       userList: [],
       changeform: {
@@ -192,7 +241,22 @@ export default {
         size: 5
       },
       total: 0,
-      formLabelWidth: '100px'
+      formLabelWidth: '100px',
+      rulesForFilePath: {
+        path: [
+          {
+            required: true,
+            message: '请输入路径',
+            trigger: 'blur'
+          },
+          {
+            max: 1000,
+            message: 'URL limit 1000',
+            trigger: 'blur'
+          }
+        ]
+      },
+      inputFileInfoVisible: false
     }
   },
   created () {
@@ -262,6 +326,62 @@ export default {
           console.log(err)
         })
     },
+    async importfilePath (filePathInfo) {
+      if (this.$store.getters.getuser.user_role === 1) {
+        const confirmRes = await this.$confirm(
+          '确认导入用户？',
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }
+        ).catch(err => err)
+        if (confirmRes !== 'confirm') return this.$message.info('已取消')
+        await this.$http
+          .post('user/userImport', filePathInfo)
+          .then(result => {
+            if (!result.data) {
+              this.$message.error('导入失败')
+              this.getUserList()
+            } else {
+              this.$message.success('导入成功')
+              console.log(result.data)
+              this.getUserList()
+            }
+          })
+      } else {
+        this.$message.error('没有权限导入用户')
+      }
+    },
+    async exportfilePath (filePathInfo) {
+      if (this.$store.getters.getuser.user_role === 1) {
+        const confirmRes = await this.$confirm(
+          '确认导出用户？',
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }
+        ).catch(err => err)
+        if (confirmRes !== 'confirm') return this.$message.info('已取消')
+        await this.$http
+          .post('user/userImport', filePathInfo)
+          .then(result => {
+            if (!result.data) {
+              this.$message.error('导出失败')
+              this.getUserList()
+            } else {
+              this.$message.success('导出成功')
+              console.log(result.data)
+              this.getUserList()
+            }
+          })
+      } else {
+        this.$message.error('没有权限导出用户')
+      }
+    },
     async deleteuserById (id) {
       if (this.$store.getters.getuser.user_role === 1) {
         const confirmRes = await this.$confirm(
@@ -293,6 +413,9 @@ export default {
       if (this.$store.getters.getuser.user_role === 0) {
         this.$message.error('没有权限删除用户')
       }
+    },
+    clearFileInfo () {
+      this.$refs.fileInfo.resetFields()
     }
     // getUserOrder (id) {
     //   this.$router.push({
