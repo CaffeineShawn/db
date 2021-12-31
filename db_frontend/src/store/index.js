@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    user: {
+    currentUser: getStorage('currentUser') ? getStorage('currentUser') : {
       user_id: null,
       user_name: '',
       user_password: '',
@@ -17,20 +17,16 @@ const store = new Vuex.Store({
   },
   getters: {
     getuser (state) {
-      let user = getStorage('user')
+      let user = getStorage('currentUser')
       state.user = user
       return state.user
     }
 
   },
   mutations: {
-    setuser (state, obj) {
-      // state.user.userid = obj.userid || state.user.userid;
-      // state.user.username = obj.username || state.user.username;
-      // state.user.usernickname = obj.usernickname || state.user.usernickname;
-      // state.user.userrole = obj.username.userrole || state.user.userrole;
-      state.user = obj
-      setStorage('user', obj)
+    setuser (state, payload) {
+      state.currentUser = payload.user
+      setStorage('currentUser', payload.user)
     },
     removeuser (state) {
       state.user = {
@@ -41,7 +37,7 @@ const store = new Vuex.Store({
         user_phone: '',
         user_role: null
       }
-      removeStorage('user')
+      removeStorage('currentUser')
     }
   },
   actions: {

@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Composition from '../components/Composition.vue'
 import Home from '../components/Home.vue'
 import UserInfo from '../components/UserInfo.vue'
 import OrderInfo from '../components/OrderInfo.vue'
@@ -12,8 +11,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Composition',
-      component: Composition
+      name: 'Login',
+      component: Login
     },
     {
       path: '/login',

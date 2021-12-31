@@ -25,15 +25,15 @@
               icon="el-icon-plus"
               @click="addOrderDialogVisible = true"
               round
-              v-if="this.$store.getters.getuser.user_role === 1"
             >
               添加订单
             </el-button>
             <el-button
               style="margin-left: 10px; margin-top: 10px"
-              icon="el-icon-folder"
+              icon="el-icon-upload"
               @click="importOrderDialogVisible = true"
               round
+              v-if="this.$store.state.currentUser.user_role === 1"
             >
               导入订单
             </el-button>
@@ -42,8 +42,18 @@
               icon="el-icon-printer"
               @click="exportOrder"
               round
+              v-if="this.$store.state.currentUser.user_role === 1"
             >
               导出订单
+            </el-button>
+            <el-button
+              style="margin-left: 10px; margin-top: 10px"
+              icon="el-icon-pie-chart"
+              @click="showOrderAnalyseDialog"
+              round
+              v-if="this.$store.state.currentUser.user_role === 1"
+            >
+              订单分析
             </el-button>
           </el-col>
         </el-row>
@@ -117,6 +127,7 @@
                 >订单信息</el-button
               >
               <el-button
+                v-if="$store.state.currentUser.user_role === 1"
                 type="danger"
                 icon="el-icon-delete"
                 size="mini"
@@ -126,28 +137,20 @@
               >
             </template>
           </el-table-column>
-           <el-table-column label="操作" v-if="this.$store.getters.getuser.user_role === 0">
-            <template slot-scope="scope">
-              <el-button
-                type="primary is-plain"
-                icon="el-icon-box"
-                size="mini"
-                @click="showorderTrackDialog(scope.row)"
-                >物流信息</el-button
-              >
-              <el-button
-                type="info"
-                icon="el-icon-view"
-                size="mini"
-                @click="showEditOrderDialog(scope.row.order_id)"
-                plain
-                >订单信息</el-button
-              >
-            </template>
-          </el-table-column>
         </el-table>
       </main>
     </el-main>
+
+    <el-dialog
+      class="orderAnalyse"
+      title="订单分析"
+      center
+      :visible.sync="OrderAnalyseDialogVisible"
+      width="35%"
+      @close="orderAnalyseDialogClosed"
+    >
+      <div class="orderPieChartBox" ref="orderPieChart"></div>
+    </el-dialog>
 
     <el-dialog
       class="importOrder"
@@ -155,17 +158,31 @@
       center
       :visible.sync="importOrderDialogVisible"
       width="26.5%"
+      @close="handleImportOrderDialogClosed"
     >
       <div>
         <el-upload
           class="uploadOrder"
+          ref = "uploadOrder"
           drag
           :before-upload="handleBeforeUpload"
           action="http://localhost:8085/excel/importOrder"
-          >
+          :http-request="uploadFile"
+        >
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-          <div class="el-upload__tip" slot="tip">只能上传xlsx</div>
+          <div class="el-upload__tip" slot="tip">
+            <span>只能上传xlsx</span>
+            <el-button
+              style="float:right"
+              type="primary"
+              icon="el-icon-check"
+              size="mini"
+              @click="importOrder"
+              plain
+              >开始导入
+            </el-button>
+          </div>
         </el-upload>
       </div>
     </el-dialog>
@@ -177,9 +194,9 @@
       :visible.sync="orderTrackDialogVisible"
       width="45%"
       @close="orderTrackDialogClosed"
-      v-if="this.$store.getters.getuser.user_role === 1"
+      v-if="this.$store.state.currentUser.user_role === 1"
     >
-      <div class="trackBox" style="display: flex;">
+      <div class="trackBox" style="display: flex">
         <div class="track">
           查看方式:
           <el-radio-group v-model="reverse">
@@ -196,25 +213,39 @@
               :timestamp="dateFormat(item.current_time)"
               placement="top"
             >
-            <span>
-              <p v-if="index == 0">货物在[{{ item.current_location }}]等待发货</p>
-              <p
-                v-else-if="
-                  item.current_location == orderTrack.order_destination
-                "
-              >
-                货物到达终点[{{ item.current_location }}]
-              </p>
-              <p v-else>货物到达[{{ item.current_location }}]</p>
-              <el-button type="danger" icon="el-icon-delete" circle size="mini" @click="deleteTrack(item)"></el-button>
-              <el-button type="info" icon="el-icon-edit" circle size="mini" @click="deliverTrack(item)"></el-button>
-            </span>
+              <span>
+                <p v-if="index == 0">
+                  货物在[{{ item.current_location }}]等待发货
+                </p>
+                <p
+                  v-else-if="
+                    item.current_location == orderTrack.order_destination
+                  "
+                >
+                  货物到达终点[{{ item.current_location }}]
+                </p>
+                <p v-else>货物到达[{{ item.current_location }}]</p>
+                <el-button
+                  type="danger"
+                  icon="el-icon-delete"
+                  circle
+                  size="mini"
+                  @click="deleteTrack(item)"
+                ></el-button>
+                <el-button
+                  type="info"
+                  icon="el-icon-edit"
+                  circle
+                  size="mini"
+                  @click="deliverTrack(item)"
+                ></el-button>
+              </span>
             </el-timeline-item>
           </el-timeline>
         </div>
         <div class="addTrackInfo" style="margin-left: 15%">
-          <el-card class="addTrackInfoCard" style="text-align:right;">
-            <span style="float:left">添加物流信息</span>
+          <el-card class="addTrackInfoCard" style="text-align: right">
+            <span style="float: left">添加物流信息</span>
             <el-divider></el-divider>
             <el-form
               ref="trackInfo"
@@ -249,7 +280,12 @@
                 ></el-input>
               </el-form-item>
             </el-form>
-            <el-button type="mini" @click="updateTrack" icon="el-icon-check" plain style="float:left"
+            <el-button
+              type="mini"
+              @click="updateTrack"
+              icon="el-icon-check"
+              plain
+              style="float: left"
               >更 新</el-button
             >
             <el-button type="mini" @click="addTrack" icon="el-icon-check" plain
@@ -267,9 +303,9 @@
       :visible.sync="orderTrackDialogVisible"
       width="30%"
       @close="orderTrackDialogClosed"
-      v-if="this.$store.getters.getuser.user_role === 0"
+      v-if="this.$store.state.currentUser.user_role === 0"
     >
-      <div class="trackBox" style="display: flex;">
+      <div class="trackBox" style="display: flex">
         <div class="track">
           查看方式:
           <el-radio-group v-model="reverse">
@@ -319,6 +355,7 @@
             label-width="100px"
             label-position="auto"
             :rules="rulesForGood"
+            :disabled="this.$store.state.currentUser.user_role === 0"
           >
             <el-form-item label="商品名:" prop="good_name">
               <el-input
@@ -354,6 +391,7 @@
             label-width="100px"
             label-position="auto"
             :rules="rulesForOrder"
+            :disabled="this.$store.state.currentUser.user_role === 0"
           >
             <el-form-item label="发货地点:" prop="order_origin">
               <el-input
@@ -391,6 +429,7 @@
           >取 消</el-button
         >
         <el-button
+          v-if="this.$store.state.currentUser.user_role === 1"
           type="primary"
           @click="updateOrderInfo"
           icon="el-icon-check"
@@ -576,12 +615,18 @@
 .addTrackInfoCard {
   background: rgba(173, 190, 142, 0.7);
 }
+.orderPieChartBox {
+  width: 500px;
+  height: 400px;
+  margin-top: 15%;
+}
 </style>
 
 <script>
 export default {
   data () {
     return {
+      file: {},
       isConsignor: true,
       orderList: [],
       queryInfo: {
@@ -592,12 +637,26 @@ export default {
       total: 0,
       orderTrackDialogVisible: false,
       editOrderInfoDialogVisible: false,
+      importOrderDialogVisible: false,
+      OrderAnalyseDialogVisible: false,
       orderTrack: [],
       reverse: false,
-      goodInfo: {},
+      goodInfo: {
+        good_price: 0.0,
+        good_weight: 0.0,
+        good_name: ''
+      },
       orderInfo: {},
-      consignor: {},
-      consignee: {},
+      consignor: {
+        user_phone: '',
+        user_name: '',
+        user_address: ''
+      },
+      consignee: {
+        user_phone: '',
+        user_name: '',
+        user_address: ''
+      },
       trackInfo: {
         time: '',
         date: '',
@@ -734,12 +793,28 @@ export default {
   },
   methods: {
     async getOrderList () {
+      var size = this.queryInfo.size
+      var page = this.queryInfo.page
+      if (this.$store.state.currentUser.user_role === 0) {
+        this.queryInfo.size = 0
+      }
       await this.$http
         .post('/order/findAllOrder', this.queryInfo)
         .then((result) => {
-          console.log(result)
-          this.orderList = result.data.res
-          this.total = result.data.total
+          this.queryInfo.size = size
+          if (this.$store.state.currentUser.user_role === 0) {
+            this.orderList = result.data.res.filter(res => {
+              return ((res.consignor === this.$store.state.currentUser.user_name && res.consignor_phone === this.$store.state.currentUser.user_phone) ||
+                      (res.consignee === this.$store.state.currentUser.user_name && res.consignee_phone === this.$store.state.currentUser.user_phone))
+            })
+            this.total = this.orderList.length
+            this.orderList = this.orderList.slice((page - 1) * size, (page - 1) * size + size)
+          } else {
+            this.orderList = result.data.res
+            this.total = result.data.total
+          }
+          // this.orderList = result.data.res
+          // this.total = result.data.total
           console.log(result)
         })
         .catch((err) => {
@@ -797,7 +872,9 @@ export default {
           this.trackInfo.order_id = this.orderTrack.order_id
           var date = '' + this.trackInfo.date
           var time = '' + this.trackInfo.time
-          this.trackInfo.current_time = Date.parse(date.slice(0, 10) + ' ' + time.slice(11, 19))
+          this.trackInfo.current_time = Date.parse(
+            date.slice(0, 10) + ' ' + time.slice(11, 19)
+          )
           await this.$http
             .post('/track/addTrack', this.trackInfo)
             .then((result) => {
@@ -822,52 +899,65 @@ export default {
     async deleteTrack (track) {
       track.current_time = Date.parse(this.dateFormat(track.current_time))
       console.log(track)
-      await this.$http.delete('/track/deleteSpecificTrack', {data: track}).then((result) => {
-        if (result.data === 'ok') {
-          this.$message.success('删除成功')
-          this.getOrderTrack(this.orderTrack)
-          this.$forceUpdate()
-        } else {
-          this.$message.error('删除异常')
-        }
-      }).catch((err) => {
-        console.log(err)
-      })
+      await this.$http
+        .delete('/track/deleteSpecificTrack', { data: track })
+        .then((result) => {
+          if (result.data === 'ok') {
+            this.$message.success('删除成功')
+            this.getOrderTrack(this.orderTrack)
+            this.$forceUpdate()
+          } else {
+            this.$message.error('删除异常')
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     deliverTrack (track) {
       var timeInfo = this.dateFormat(track.current_time)
       this.oldTrackInfo.date = this.oldTrackInfo.time = timeInfo
       this.trackInfo.date = this.trackInfo.time = timeInfo
-      this.oldTrackInfo.current_location = this.trackInfo.current_location = track.current_location
+      this.oldTrackInfo.current_location = this.trackInfo.current_location =
+        track.current_location
     },
     async updateTrack () {
       this.$refs.trackInfo.validate(async (valid) => {
         if (valid) {
-          this.oldTrackInfo.order_id = this.trackInfo.order_id = this.orderTrack.order_id
+          this.oldTrackInfo.order_id = this.trackInfo.order_id =
+            this.orderTrack.order_id
           var date = '' + this.trackInfo.date
           var time = '' + this.trackInfo.time
-          this.trackInfo.current_time = Date.parse(date.slice(0, 10) + ' ' + time.slice(11, 19))
+          this.trackInfo.current_time = Date.parse(
+            date.slice(0, 10) + ' ' + time.slice(11, 19)
+          )
           date = '' + this.oldTrackInfo.date
           time = '' + this.oldTrackInfo.time
-          this.oldTrackInfo.current_time = Date.parse(date.slice(0, 10) + ' ' + time.slice(11, 19))
+          this.oldTrackInfo.current_time = Date.parse(
+            date.slice(0, 10) + ' ' + time.slice(11, 19)
+          )
           var tracksInfo = {
             oldTrackInfo: this.oldTrackInfo,
             newTrackInfo: this.trackInfo
           }
-          this.$http.post('/track/updateTrack', tracksInfo).then((result) => {
-            if (result.data === 'ok') {
-              this.$message.success('更新成功')
-              this.getOrderTrack(this.orderTrack)
-              this.oldTrackInfo.time = this.trackInfo.time
-              this.oldTrackInfo.date = this.trackInfo.date
-              this.oldTrackInfo.current_location = this.trackInfo.current_location
-              this.$forceUpdate()
-            } else {
-              this.$message.error('更新异常')
-            }
-          }).catch((err) => {
-            console.log(err)
-          })
+          this.$http
+            .post('/track/updateTrack', tracksInfo)
+            .then((result) => {
+              if (result.data === 'ok') {
+                this.$message.success('更新成功')
+                this.getOrderTrack(this.orderTrack)
+                this.oldTrackInfo.time = this.trackInfo.time
+                this.oldTrackInfo.date = this.trackInfo.date
+                this.oldTrackInfo.current_location =
+                  this.trackInfo.current_location
+                this.$forceUpdate()
+              } else {
+                this.$message.error('更新异常')
+              }
+            })
+            .catch((err) => {
+              console.log(err)
+            })
         } else {
           this.$message.error('信息不完善或有误')
         }
@@ -1073,30 +1163,123 @@ export default {
     },
     handleBeforeUpload (file) {
       let extension = file.name.substring(file.name.lastIndexOf('.') + 1)
+      if (JSON.stringify(this.file) !== '{}') {
+        this.$message.error('只能选择一个文件')
+        return false
+      }
       if (extension !== 'xlsx') {
-        this.$notify.warning({
-          title: '警告',
-          message: `只能上传xlsx的文件`
-        })
+        this.$message.error('只能上传xlsx的文件')
         return false
       }
     },
-    async importOrder (file) {
-      await this.$http.post('excel/importOrder', file).then((result) => {
-        if (result.data === 'ok') {
-          this.$message.success('导入成功')
-        } else {
-          this.$message.error('导入异常')
-        }
-      }).catch((err) => {
-        console.log(err)
-      })
+    handleImportOrderDialogClosed () {
+      console.log(JSON.stringify(this.file))
+      this.file = {}
+      this.$refs.uploadOrder.clearFiles()
+    },
+    async importOrder () {
+      let fd = new FormData()
+      fd.append('file', this.file)
+      await this.$http
+        .post('excel/importOrder', fd, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        .then((result) => {
+          if (result.data === 'ok') {
+            this.$message.success('导入成功')
+            this.getOrderList()
+            this.importOrderDialogVisible = false
+          } else {
+            this.$message.error('导入异常')
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     async exportOrder () {
-      await this.$http.get('excel/exportOrder').then((result) => {
-        window.location.href = result.request.responseURL
-      }).catch((err) => {
-        console.log(err)
+      await this.$http
+        .get('excel/exportOrder')
+        .then((result) => {
+          window.location.href = result.request.responseURL
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    uploadFile (item) {
+      this.file = item.file
+    },
+    showOrderAnalyseDialog () {
+      this.getOrderAnalysePieChartInfo()
+      this.OrderAnalyseDialogVisible = true
+    },
+    orderAnalyseDialogClosed () {
+      this.$echarts.dispose(this.$refs.orderPieChart)
+    },
+    async getOrderAnalysePieChartInfo () {
+      await this.$http.get('/order/findOrders/').then((result) => {
+        let analyseInfo = result.data
+        if (analyseInfo.length > 0) {
+          var orderPieChart = this.$echarts.init(this.$refs.orderPieChart)
+          var option = {
+            title: {
+              text: '订单分析图表',
+              subtext: '百分比显示'
+            },
+            tooltip: {
+              trigger: 'item',
+              formatter: '{a}：{b} <br/> {c}个 ({d}%) <br/>'
+            },
+            legend: {
+              bottom: 100,
+              left: 'center',
+              data: ['待发货', '已发货', '已送达']
+            },
+            series: [
+              {
+                name: '成绩分布',
+                type: 'pie',
+                radius: '50%',
+                center: ['50%', '35%'],
+                data: [
+                  { value: 0, name: '待发货' },
+                  { value: 0, name: '已发货' },
+                  { value: 0, name: '已送达' }
+                ],
+                avoidLabelOverlap: true,
+                itemStyle: {
+                  emphasis: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  }
+                }
+              }
+            ]
+          }
+          analyseInfo.forEach((item) => {
+            switch (item.order_state) {
+              case '待发货':
+                option.series[0].data[0].value++
+                break
+              case '已发货':
+                option.series[0].data[1].value++
+                break
+              case '已送达':
+                option.series[0].data[2].value++
+                break
+              default:
+                option.series[0].data[0].value++
+                break
+            }
+          })
+          orderPieChart.setOption(option)
+        } else {
+          return this.$message.info('暂无订单信息')
+        }
       })
     }
   }

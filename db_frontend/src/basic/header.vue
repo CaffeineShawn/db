@@ -20,7 +20,7 @@
             @command="handleCommand"
           >
             <span class="el-dropdown-link">
-              {{ this.$store.getters.getuser.user_name }}
+              {{ this.$store.state.currentUser.user_name }}
               <i class="el-icon-caret-bottom"></i>
             </span>
 
@@ -38,7 +38,7 @@
 
 <script>
 export default {
-  name: 'header',
+  name: 'myHeader',
   data () {
     return {
       user: {
@@ -69,12 +69,12 @@ export default {
     // 用户名下拉菜单选择事件
     handleCommand (command) {
       if (command === 'loginout') {
-        this.$store.getters.getuser.user_name = ''
-        this.$store.getters.getuser.user_id = null
-        this.$store.getters.getuser.user_gender = ''
-        this.$store.getters.getuser.user_password = ''
-        this.$store.getters.getuser.user_phone = ''
-        this.$store.getters.getuser.user_role = null
+        this.$store.state.currentUser.user_name = ''
+        this.$store.state.currentUser.user_id = null
+        this.$store.state.currentUser.user_gender = ''
+        this.$store.state.currentUser.user_password = ''
+        this.$store.state.currentUser.user_phone = ''
+        this.$store.state.currentUser.user_role = null
         this.$router.push('/login')
       }
     },

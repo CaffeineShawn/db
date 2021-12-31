@@ -23,6 +23,7 @@ public class OrderExcelListener extends AnalysisEventListener<OrderInfoExcel> {
             order.setOrder_id(orderInfo.getOrder_id());
             order.setOrder_destination(orderInfo.getOrder_destination());
             order.setOrder_origin(orderInfo.getOrder_origin());
+            order.setOrder_state(orderInfo.getOrder_state());
             this.orderList.add(order);
         } else if(type == "consignor"){
             User user = new User();

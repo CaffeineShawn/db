@@ -36,6 +36,7 @@ public class OrderService {
 
     public List<OrderInfoExcel> findAllOrder(QueryInfo queryInfo){
         queryInfo.setPage((queryInfo.getPage() - 1) * queryInfo.getSize());
+        System.out.println(queryInfo);
         return orderMapper.findAllOrder(queryInfo);
     }
 

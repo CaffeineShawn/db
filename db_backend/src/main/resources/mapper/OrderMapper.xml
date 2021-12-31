@@ -6,8 +6,16 @@
 <mapper namespace="com.caffeineshawn.db_backend.mapper.OrderMapper">
 
     <insert id="addOrder" useGeneratedKeys="true" keyProperty="order_id">
-        insert into `order`(consignor_id, consignee_id,order_destination,order_origin)
-        values (#{consignor_id}, #{consignee_id}, #{order_destination}, #{order_origin})
+        insert into `order`(consignor_id, consignee_id,order_destination,order_origin
+            <if test="order_state != null and order_state != ''">
+                ,order_state
+            </if>
+        )
+        values (#{consignor_id}, #{consignee_id}, #{order_destination}, #{order_origin}
+            <if test="order_state != null and order_state != ''">
+                ,#{order_state}
+            </if>
+        )
     </insert>
 
     <select id="findAllOrder" parameterType="com.caffeineshawn.db_backend.entity.QueryInfo"
@@ -32,7 +40,7 @@
             or `user`.user_phone like concat('%', #{information}, '%')
           )
         </if>
-        <if test="page != '' and page != null and size != '' and page != null">
+        <if test="size != 0">
             limit #{page},#{size}
         </if>
     </select>

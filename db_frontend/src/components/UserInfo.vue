@@ -162,7 +162,7 @@
         <el-form-item
           label="用户权限："
           prop="phone"
-          v-if="this.$store.getters.getuser.user_role === 1"
+          v-if="this.$store.state.currentUser.user_role === 1"
         >
           <el-input
             v-model="userInfo.user_role"
@@ -205,8 +205,6 @@
   border-radius: 10px;
   /* margin-left: 30px; */
   margin-right: 30px;
-}
-.el-input {
 }
 .el-pagination {
   text-align: center;
@@ -264,7 +262,7 @@ export default {
   },
   methods: {
     async getUserList () {
-      if (this.$store.getters.getuser.user_role === 1) {
+      if (this.$store.state.currentUser.user_role === 1) {
         await this.$http
           .post('/user/findAllUser', this.queryInfo)
           .then(result => {
@@ -275,13 +273,13 @@ export default {
             console.log(err)
           })
       }
-      if (this.$store.getters.getuser.user_role === 0) {
-        this.queryInfo.information = this.$store.getters.getuser.user_name
+      if (this.$store.state.currentUser.user_role === 0) {
+        this.queryInfo.information = this.$store.state.currentUser.user_name
         await this.$http
           .post('/user/findAllUser', this.queryInfo)
           .then(result => {
             this.userList = result.data.res.filter(res => {
-              return res.user_id === this.$store.getters.getuser.user_id
+              return res.user_id === this.$store.state.currentUser.user_id
             })
             this.total = result.data.total
             this.queryInfo.information = ''
@@ -383,7 +381,7 @@ export default {
       }
     },
     async deleteuserById (id) {
-      if (this.$store.getters.getuser.user_role === 1) {
+      if (this.$store.state.currentUser.user_role === 1) {
         const confirmRes = await this.$confirm(
           '确认删除该用户？该操作不可逆',
           '提示',
@@ -410,7 +408,7 @@ export default {
             console.log(err)
           })
       }
-      if (this.$store.getters.getuser.user_role === 0) {
+      if (this.$store.state.currentUser.user_role === 0) {
         this.$message.error('没有权限删除用户')
       }
     },

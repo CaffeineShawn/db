@@ -92,9 +92,6 @@
 
 export default {
   name: 'Login',
-  props: {
-    msg: String
-  },
   data () {
     return {
       showlogin: true,
@@ -129,19 +126,12 @@ export default {
         console.log('detail', res)
         if (res.data > 0) {
           this.$http.get('/user/findUserById/' + res.data).then(res => {
-            console.log('user', res)
-            this.$store.getters.getuser.user_name = res.data.user_name
-            this.$store.getters.getuser.user_id = res.data.user_id
-            this.$store.getters.getuser.user_password = res.data.user_password
-            this.$store.getters.getuser.user_gender = res.data.user_gender
-            this.$store.getters.getuser.user_phone = res.data.user_phone
-            this.$store.getters.getuser.user_role = res.data.user_role
+            this.$store.commit('setuser', {user: res.data})
           })
           this.$message({
             message: '登录成功',
             type: 'success'
           })
-          console.log('用户', this.$store.getters.getuser)
           this.$router.push('/home')
         } else {
           this.$message({
