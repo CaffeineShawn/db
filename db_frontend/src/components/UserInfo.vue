@@ -127,7 +127,7 @@
       center
       :destroy-on-close="true"
     >
-      <el-form ref="form" :model="changeform" label-width="100px">
+      <el-form ref="form" :model="userInfo" label-width="100px">
         <el-form-item label="用户名：" prop="userName">
           <el-input
             v-model="userInfo.user_name"
@@ -144,12 +144,15 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="用户性别：" prop="gender">
-          <el-input
+          <el-select
             v-model="userInfo.user_gender"
             :label-width="formLabelWidth"
             placeholder="请设置性别"
-            style="width: auto"
-          ></el-input>
+            style="width: 207px"
+          >
+          <el-option label="男" value="男" ></el-option>
+            <el-option label="女" value="女"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="新电话号码：" prop="phone">
           <el-input
@@ -164,12 +167,15 @@
           prop="phone"
           v-if="this.$store.state.currentUser.user_role === 1"
         >
-          <el-input
+          <el-select
             v-model="userInfo.user_role"
             :label-width="formLabelWidth"
             placeholder="权限设置"
-            style="width: auto"
-          ></el-input>
+            style="width: 207px"
+          >
+            <el-option label="1" value="1" ></el-option>
+            <el-option label="0" value="0"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -222,7 +228,7 @@ export default {
         user_password: '',
         user_gender: '',
         user_pohne: '',
-        user_role: ''
+        user_role: null
       },
       filePathInfo: {
         path: ''
