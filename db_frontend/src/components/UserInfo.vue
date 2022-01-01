@@ -14,7 +14,7 @@
                 slot="append"
                 icon="el-icon-search"
                 @click="getUserList"
-                >搜索</el-button
+              >搜索</el-button
               >
             </el-input>
           </el-col>
@@ -22,7 +22,8 @@
             <el-button
               style="margin-left: 10px"
               icon="el-icon-document"
-              v-if="this.$store.getters.getuser.user_role === 1"
+              v-if="this.$store.state.currentUser.user_role === 1"
+              round
               @click="inputFileInfoVisible=true"
             >导入导出用户</el-button
             >
@@ -35,9 +36,9 @@
       title="导入导出用户"
       :visible.sync="inputFileInfoVisible"
       @close="clearFileInfo">
-    <div class="filePathInfo" style="margin-left: 0%">
+      <div class="filePathInfo" style="margin-left: 0%">
         <el-form
-          ref=filePathInfo
+          ref="filePathInfo"
           :model="filePathInfo"
           label-width="auto"
           label-position="auto"
@@ -66,7 +67,7 @@
             style="float: left"
           >导入</el-button>
         </el-form>
-    </div>
+      </div>
     </el-dialog>
     <el-main>
       <main class="main">
@@ -104,7 +105,7 @@
                 icon="el-icon-lock"
                 size="mini"
                 @click="showuserDialog(scope.row)"
-                >修改信息</el-button
+              >修改信息</el-button
               >
               <el-button
                 type="danger"
@@ -112,7 +113,7 @@
                 size="mini"
                 @click="deleteuserById(scope.row.user_id)"
                 plain
-                >删除用户</el-button
+              >删除用户</el-button
               >
             </template>
           </el-table-column>
@@ -371,7 +372,7 @@ export default {
         ).catch(err => err)
         if (confirmRes !== 'confirm') return this.$message.info('已取消')
         await this.$http
-          .post('user/userImport', filePathInfo)
+          .post('user/userExport', filePathInfo)
           .then(result => {
             if (!result.data) {
               this.$message.error('导出失败')
@@ -419,7 +420,7 @@ export default {
       }
     },
     clearFileInfo () {
-      this.$refs.fileInfo.resetFields()
+      this.$refs.filePathInfo.resetFields()
     }
     // getUserOrder (id) {
     //   this.$router.push({

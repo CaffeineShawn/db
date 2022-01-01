@@ -74,8 +74,8 @@
             style="width: auto"
             @change="selectType"
           >
-            <el-option label="男" value="man"></el-option>
-            <el-option label="女" value="woman"></el-option>
+            <el-option label="男" value="男"></el-option>
+            <el-option label="女" value="女"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -152,7 +152,7 @@ export default {
       console.log(user)
       // 校验
       // 发送请求
-      await this.$http.post('/user/addUser', user).then(res => {
+      await this.$http.post('/user/addAllUser', user).then(res => {
         this.$message({
           message: '注册成功',
           type: 'success'
