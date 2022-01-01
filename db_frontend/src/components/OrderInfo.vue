@@ -825,6 +825,7 @@ export default {
       return (this.queryInfo.page - 1) * this.queryInfo.size + 1 + index
     },
     handleSizeChange (newSize) {
+      this.queryInfo.page = 1
       this.queryInfo.size = newSize
       this.getOrderList()
     },

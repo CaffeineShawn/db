@@ -20,25 +20,24 @@
 
     <select id="findAllOrder" parameterType="com.caffeineshawn.db_backend.entity.QueryInfo"
             resultType="com.caffeineshawn.db_backend.entity.OrderInfoExcel">
-        select os.user_name consignor,os.user_phone consignor_phone,os.order_id,
-               os.order_destination,os.order_origin,os.order_state,
-               `user`.user_name consignee,`user`.user_phone consignee_phone,
-               good.*
-        from `user`,good,order_good,(
-            select user_name,user_phone,consignee_id,order_id,order_origin,order_destination,order_state
-            from `order`,`user`
-            where consignor_id = user_id
-        ) os
-        where os.consignee_id = `user`.user_id
-          and os.order_id = order_good.order_id
-          and order_good.good_id = good.good_id
+#         select os.user_name consignor,os.user_phone consignor_phone,os.order_id,
+#                os.order_destination,os.order_origin,os.order_state,
+#                `user`.user_name consignee,`user`.user_phone consignee_phone,
+#                good.*
+#         from `user`,good,order_good,(
+#             select user_name,user_phone,consignee_id,order_id,order_origin,order_destination,order_state
+#             from `order`,`user`
+#             where consignor_id = user_id
+#         ) os
+#         where os.consignee_id = `user`.user_id
+#           and os.order_id = order_good.order_id
+#           and order_good.good_id = good.good_id
+        select * from view_order
         <if test="information != '' and information != null">
-          and (
-            os.user_name like concat('%', #{information}, '%')
-            or os.user_phone like concat('%', #{information}, '%')
-            or `user`.user_name like concat('%', #{information}, '%')
-            or `user`.user_phone like concat('%', #{information}, '%')
-          )
+            where consignor like concat('%', #{information}, '%')
+            or consignor_phone like concat('%', #{information}, '%')
+            or consignee like concat('%', #{information}, '%')
+            or consignee_phone like concat('%', #{information}, '%')
         </if>
         <if test="size != 0">
             limit #{page},#{size}
@@ -47,22 +46,12 @@
 
     <select id="findAllOrderCount" parameterType="com.caffeineshawn.db_backend.entity.QueryInfo"
             resultType="java.lang.Integer">
-        select count(*)
-        from `user`,good,order_good,(
-        select user_name,user_phone,consignee_id,order_id,order_origin,order_destination,order_state
-        from `order`,`user`
-        where consignor_id = user_id
-        ) os
-        where os.consignee_id = `user`.user_id
-        and os.order_id = order_good.order_id
-        and order_good.good_id = good.good_id
+        select count(*) from view_order
         <if test="information != '' and information != null">
-            and (
-            os.user_name like concat('%', #{information}, '%')
-            or os.user_phone like concat('%', #{information}, '%')
-            or `user`.user_name like concat('%', #{information}, '%')
-            or `user`.user_phone like concat('%', #{information}, '%')
-            )
+            where consignor like concat('%', #{information}, '%')
+            or consignor_phone like concat('%', #{information}, '%')
+            or consignee like concat('%', #{information}, '%')
+            or consignee_phone like concat('%', #{information}, '%')
         </if>
     </select>
 
@@ -96,7 +85,7 @@
     </insert>
 
     <select id="findOrderById" resultType="com.caffeineshawn.db_backend.entity.Order">
-        select * from `order`
+        select * from view_ordergood
         where order_id = #{order_id}
     </select>
 

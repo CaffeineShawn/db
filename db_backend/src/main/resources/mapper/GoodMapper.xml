@@ -12,9 +12,8 @@
     </insert>
 
     <select id="findGoodById" resultType="com.caffeineshawn.db_backend.entity.Good">
-        select * from good,order_good
-        where order_good.order_id = #{order_id}
-        and order_good.good_id = good.good_id
+        select * from view_orderGood
+        where order_id = #{order_id}
     </select>
 
     <update id="updateGoodInfo" parameterType="com.caffeineshawn.db_backend.entity.Good">
