@@ -43,4 +43,7 @@
         and good_weight = #{good_weight}
     </select>
 
+    <select id="getGoodAnalyseInfo" resultType="java.util.HashMap">
+        select * from view_goodsale
+    </select>
 </mapper>

@@ -55,6 +55,15 @@
             >
               订单分析
             </el-button>
+             <el-button
+              style="margin-left: 10px; margin-top: 10px"
+              icon="el-icon-pie-chart"
+              @click="showGoodAnalyseDialog"
+              round
+              v-if="this.$store.state.currentUser.user_role === 1"
+            >
+              货物分析
+            </el-button>
           </el-col>
         </el-row>
       </header>
@@ -145,11 +154,25 @@
       class="orderAnalyse"
       title="订单分析"
       center
-      :visible.sync="OrderAnalyseDialogVisible"
+      :visible.sync="orderAnalyseDialogVisible"
       width="35%"
       @close="orderAnalyseDialogClosed"
+      :destroy-on-close="true"
     >
       <div class="orderPieChartBox" ref="orderPieChart"></div>
+    </el-dialog>
+
+    <el-dialog
+      class="goodAnalyse"
+      title="货物分析"
+      center
+      :visible.sync="goodAnalyseDialogVisible"
+      @close="goodAnalyseDialogClosed"
+    >
+      <div class="goodAnalyseBox" style="display: flex">
+        <div class="goodPieChartBox" ref="goodPieChart"></div>
+        <div class="goodBarChartBox" ref="goodBarChart"></div>
+      </div>
     </el-dialog>
 
     <el-dialog
@@ -192,7 +215,6 @@
       title="物流信息"
       center
       :visible.sync="orderTrackDialogVisible"
-      width="45%"
       @close="orderTrackDialogClosed"
       v-if="this.$store.state.currentUser.user_role === 1"
     >
@@ -620,6 +642,19 @@
   height: 400px;
   margin-top: 15%;
 }
+.goodAnalyseBox{
+  width: 100%;
+  height: 100%;
+}
+.goodPieChartBox{
+  width: 500px;
+  height: 400px;
+  margin-top: 15%;
+}
+.goodBarChartBox{
+  width: 500px;
+  height: 400px;
+}
 </style>
 
 <script>
@@ -638,7 +673,8 @@ export default {
       orderTrackDialogVisible: false,
       editOrderInfoDialogVisible: false,
       importOrderDialogVisible: false,
-      OrderAnalyseDialogVisible: false,
+      orderAnalyseDialogVisible: false,
+      goodAnalyseDialogVisible: false,
       orderTrack: [],
       reverse: false,
       goodInfo: {
@@ -1215,10 +1251,17 @@ export default {
     },
     showOrderAnalyseDialog () {
       this.getOrderAnalysePieChartInfo()
-      this.OrderAnalyseDialogVisible = true
+      this.orderAnalyseDialogVisible = true
     },
     orderAnalyseDialogClosed () {
       this.$echarts.dispose(this.$refs.orderPieChart)
+    },
+    goodAnalyseDialogClosed () {
+      this.$echarts.dispose(this.$refs.goodPieChart)
+    },
+    showGoodAnalyseDialog () {
+      this.getGoodAnalysePieChartInfo()
+      this.goodAnalyseDialogVisible = true
     },
     async getOrderAnalysePieChartInfo () {
       await this.$http.get('/order/findOrders/').then((result) => {
@@ -1241,7 +1284,7 @@ export default {
             },
             series: [
               {
-                name: '成绩分布',
+                name: '订单状态',
                 type: 'pie',
                 radius: '50%',
                 center: ['50%', '35%'],
@@ -1280,6 +1323,117 @@ export default {
           orderPieChart.setOption(option)
         } else {
           return this.$message.info('暂无订单信息')
+        }
+      })
+    },
+    async getGoodAnalysePieChartInfo () {
+      await this.$http.get('/good/getGoodAnalyseInfo').then((result) => {
+        let analyseInfo = result.data
+        if (analyseInfo.length > 0) {
+          var goodPieChart = this.$echarts.init(this.$refs.goodPieChart)
+          var goodBarChart = this.$echarts.init(this.$refs.goodBarChart)
+          var pieOption = {
+            title: {
+              text: '货物分析图表',
+              subtext: '百分比显示'
+            },
+            tooltip: {
+              trigger: 'item',
+              formatter: '{a}：{b} <br/> {c}元 ({d}%) <br/>'
+            },
+            legend: {
+              bottom: 100,
+              left: 'center',
+              data: []
+            },
+            series: [
+              {
+                name: '货物名称',
+                type: 'pie',
+                radius: '50%',
+                center: ['50%', '35%'],
+                data: [],
+                avoidLabelOverlap: true,
+                itemStyle: {
+                  emphasis: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  }
+                }
+              }
+            ]
+          }
+          var barOption = {
+            title: {
+              text: '货物销售额分布图表',
+              x: 'center'
+            },
+            grid: {
+              x2: 10,
+              height: '70%'
+            },
+            tooltip: {
+              trigger: 'item',
+              formatter: '{a}：{b} <br/> {c}件'
+            },
+            xAxis: {
+              data: [],
+              axisLabel: {
+                internal: 0,
+                rotate: 30
+              }
+            },
+            yAxis: {
+              show: false,
+              min: 0 // y轴的最小值
+            },
+            legend: {
+              orient: 'vertical',
+              right: 'right',
+              data: []
+            },
+            series: [
+              {
+                name: '选择类型',
+                type: 'bar',
+                data: [],
+                itemStyle: {
+                  normal: {
+                    label: {
+                      show: true,
+                      position: 'top',
+                      formatter: '{c}件'
+                    },
+                    color: function (params) {
+                      // 让不同选项显示不同的颜色
+                      var colorList = [
+                        '#C1232B',
+                        '#B5C334',
+                        '#FCCE10',
+                        '#E87C25'
+                      ]
+                      let index = params.dataIndex % 4
+                      return colorList[index]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+          analyseInfo.forEach((item) => {
+            let pieData = {value: item.sale, name: item.good_name}
+            let barData = {value: item.number, name: item.good_name}
+            pieOption.series[0].data.push(pieData)
+            pieOption.legend.data.push(item.good_name)
+            barOption.xAxis.data.push(item.good_name)
+            barOption.legend.data.push(item.good_name)
+            barOption.series[0].data.push(barData)
+          })
+          goodPieChart.setOption(pieOption)
+          goodBarChart.setOption(barOption)
+        } else {
+          return this.$message.info('暂无货物销售信息')
         }
       })
     }

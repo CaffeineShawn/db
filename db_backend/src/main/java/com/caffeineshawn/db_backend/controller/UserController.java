@@ -2,27 +2,20 @@ package com.caffeineshawn.db_backend.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.caffeineshawn.db_backend.entity.FilePath;
-import com.caffeineshawn.db_backend.entity.Order;
 import com.caffeineshawn.db_backend.entity.QueryInfo;
 import com.caffeineshawn.db_backend.entity.User;
 import com.caffeineshawn.db_backend.service.UserService;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-
-import java.io.FileOutputStream;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import org.apache.poi.ss.usermodel.Row;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -167,5 +160,11 @@ public class UserController {
                 return "false";
             }
             return "true";
+        }
+
+        @GetMapping("/getUserCostAnalyseInfo/{user_id}")
+        public String getUserCostAnalyseInfo(@PathVariable int user_id){
+            List<HashMap> lMap = userService.getUserCostAnalyseInfo(user_id);
+            return JSON.toJSONString(lMap);
         }
 }

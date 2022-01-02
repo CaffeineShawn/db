@@ -6,6 +6,7 @@ import com.caffeineshawn.db_backend.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -52,6 +53,10 @@ public class UserService {
 
     public int addAllUser(User user) {
         return userMapper.addAllUser(user);
+    }
+
+    public List<HashMap> getUserCostAnalyseInfo(int user_id){
+        return userMapper.getUserCostAnalyseInfo(user_id);
     }
 }
 

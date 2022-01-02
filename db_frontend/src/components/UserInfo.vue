@@ -115,11 +115,30 @@
                 plain
               >删除用户</el-button
               >
+              <el-button
+                type="info"
+                icon="el-icon-view"
+                size="mini"
+                @click="showUserAnalyseDialog(scope.row.user_id)"
+                plain
+              >
+                用户花费明细
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
       </main>
     </el-main>
+
+    <el-dialog
+      title="用户花费明细"
+      :visible.sync="userCostAnalyseDialogVisible"
+      center
+      :destroy-on-close="true"
+      width="35%"
+    >
+      <div class="userCostPieChartBox" ref="userCostPieChart"></div>
+    </el-dialog>
 
     <el-dialog
       title="修改密码"
@@ -216,6 +235,11 @@
 .el-pagination {
   text-align: center;
 }
+.userCostPieChartBox{
+  width: 500px;
+  height: 40px;
+  margin-top: 15%;
+}
 </style>
 
 <script>
@@ -246,6 +270,7 @@ export default {
         size: 5
       },
       total: 0,
+      userCostAnalyseDialogVisible: false,
       formLabelWidth: '100px',
       rulesForFilePath: {
         path: [
@@ -421,7 +446,63 @@ export default {
     },
     clearFileInfo () {
       this.$refs.filePathInfo.resetFields()
+    },
+    showUserAnalyseDialog (id) {
+      this.getUserCostAnalyse(id)
+      this.userCostAnalyseDialogVisible = true
+    },
+    async getUserCostAnalyse (id) {
+      await this.$http.get('user/getUserCostAnalyseInfo/' + id).then((result) => {
+        console.log(result.data)
+        let analyseInfo = result.data
+        if (analyseInfo.length > 0) {
+          var userCostPieChart = this.$echarts.init(this.$refs.userCostPieChart)
+          var option = {
+            title: {
+              text: '用户花费明细',
+              subtext: '百分比显示'
+            },
+            tooltip: {
+              trigger: 'item',
+              formatter: '{a}：{b} <br/> {c}元 ({d}%) <br/>'
+            },
+            legend: {
+              bottom: 100,
+              left: 'center',
+              data: []
+            },
+            series: [
+              {
+                name: '货物',
+                type: 'pie',
+                radius: '50%',
+                center: ['50%', '35%'],
+                data: [],
+                avoidLabelOverlap: true,
+                itemStyle: {
+                  emphasis: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  }
+                }
+              }
+            ]
+          }
+          analyseInfo.forEach((item) => {
+            let data = {value: item.cost, name: item.good_name}
+            option.series[0].data.push(data)
+            option.legend.data.push(item.good_name)
+          })
+          userCostPieChart.setOption(option)
+        } else {
+          return this.$message.info('暂无用户订单信息')
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
     }
+
     // getUserOrder (id) {
     //   this.$router.push({
     //     path: '/order', query: {user_id: id}

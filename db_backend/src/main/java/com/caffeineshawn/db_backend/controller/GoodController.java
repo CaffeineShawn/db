@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/good")
@@ -28,5 +29,11 @@ public class GoodController {
         if(goodService.updateGoodInfo(good) == 1)
             return "ok";
         return "error";
+    }
+
+    @GetMapping("/getGoodAnalyseInfo")
+    public String getGoodAnalyseInfo(){
+        List<HashMap> lMap = goodService.getGoodAnalyseInfo();
+        return JSON.toJSONString(lMap);
     }
 }

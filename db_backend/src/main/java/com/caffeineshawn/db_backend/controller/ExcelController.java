@@ -48,9 +48,6 @@ public class ExcelController {
         List<User> consigneeList = orderlistener.getConsigneeList();
         List<Good> goodList = orderlistener.getGoodList();
 
-        EasyExcel.read(orderTrackInputStream, Track.class, orderTrackListener).sheet(1).doRead();
-        List<Track> trackList = orderTrackListener.getTrackList();
-
         HashMap<Integer, Integer> orderMap = new HashMap<>();
         for(int i = 0; i < orderList.size(); i++){
             Order order = orderList.get(i);
@@ -58,6 +55,9 @@ public class ExcelController {
             orderService.addOrder(consignorList.get(i), consigneeList.get(i), goodList.get(i), order);
             orderMap.put(oldId, order.getOrder_id());
         }
+
+        EasyExcel.read(orderTrackInputStream, Track.class, orderTrackListener).sheet(1).doRead();
+        List<Track> trackList = orderTrackListener.getTrackList();
         for(int i = 0;i < trackList.size(); i++) {
             Track track = trackList.get(i);
             track.setOrder_id(orderMap.get(track.getOrder_id()));

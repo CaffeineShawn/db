@@ -95,4 +95,10 @@
     <select id="confirmPassword" resultType="java.lang.String">
         select user_password from user where user_id = #{user_id}
     </select>
+
+    <select id="getUserCostAnalyseInfo" resultType="java.util.HashMap">
+        select *
+        from view_usercost
+        where user_id = #{user_id}
+    </select>
 </mapper>
