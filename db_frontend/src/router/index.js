@@ -45,7 +45,7 @@ router.beforeEach((to, from, next) => {
   // to将要访问
   // 从哪访问
   // next接着干的事情next(url)重定向到url上，如果为空next()继续访问to路径
-  if (to.path === '/login') return next()
+  if (to.path === '/login' || to.path === '/') return next()
   // 获取user
   const user = getStorage('currentUser')
   if (!user) return next('/login')
