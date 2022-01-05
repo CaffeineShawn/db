@@ -3,24 +3,40 @@ import SwiftUI
 struct SettingView: View {
     @Environment(\.colorScheme) var colorScheme
     @State private var address: String = ""
+    @FocusState private var addressIsFocused: Bool
+
     var body: some View {
         NavigationView {
             Form {
-                Section {
-                    TextField(address, text: $address)
+                Section(header: Text("修改后台")) {
+                    HStack {
+                        TextField(address, text: $address)
+                            .focused($addressIsFocused)
+                        Spacer()
+                        Button {
+                            addressIsFocused = false
+                        } label: {
+                            Text("Dismiss")
+                                .foregroundColor(.accentColor)
+                        }
+                    }
+                   
+                    Button {
+                        UserDefaults.standard.set(address, forKey: "address")
+                    } label: {
+                        Text("Confirm")
+                          
+                    }
+                    Button {
+                        UserDefaults.standard.removeObject(forKey: "address")
+                    } label: {
+                        Text("Reset")
+                            .foregroundColor(.red)
+                       
+                    }
                 }
-                Button { 
-                    UserDefaults.standard.set(address, forKey: "address")
-                } label: { 
-                    Text("confirm")
-                }
-                Button { 
-                    UserDefaults.standard.removeObject(forKey: "address")
-                } label: { 
-                    Text("reset")
-                        .foregroundColor(.red)
-                }
-                Section {
+                
+                Section(header: Text("获取后台")) {
                     HStack {
                         Text("当前URL")
                         Spacer()
@@ -31,7 +47,8 @@ struct SettingView: View {
                     Button { 
                         address = UserDefaults.standard.object(forKey: "address") as? String ?? "Not set yet"
                     } label: { 
-                        Text("Get current url")
+                        Text("Get Current URL")
+                    
                     }
                     
                 }

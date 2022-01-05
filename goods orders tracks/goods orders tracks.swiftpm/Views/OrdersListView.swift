@@ -3,7 +3,7 @@ import SwiftUI
 struct OrdersListView: View {
     @State private var showAddingOrderSheet = false
     @State private var searchText = ""
-    @ObservedObject var ordersViewModel = OrdersViewModel()
+    @EnvironmentObject var ordersViewModel: OrdersViewModel
     @Environment(\.colorScheme) var colorScheme
     
     
@@ -55,7 +55,7 @@ struct OrdersListView: View {
 
                     .refreshable {
                         Task {
-                            try await ordersViewModel.fetchOrders()
+                            try await ordersViewModel.fetchOrdersWithGoods()
                         }
                     }
                     .navigationTitle("Orders")
@@ -70,7 +70,7 @@ struct OrdersListView: View {
                 }
                 .onAppear {
                     Task {
-                        try await ordersViewModel.fetchOrders()
+                        try await ordersViewModel.fetchOrdersWithGoods()
                     }
                     
                 }

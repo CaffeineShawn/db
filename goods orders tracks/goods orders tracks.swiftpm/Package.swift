@@ -33,13 +33,19 @@ let package = Package(
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
             ],
             capabilities: [
-                .localNetwork(purposeString: "fetch data", bonjourServiceTypes: ["New Service Type", ""])
+                .localNetwork(purposeString: "在？看看内网", bonjourServiceTypes: ["New Service Type"])
             ]
         )
+    ],
+    dependencies: [
+        .package(url: "https://github.com/willdale/SwiftUICharts", "2.9.6"..<"3.0.0")
     ],
     targets: [
         .executableTarget(
             name: "AppModule",
+            dependencies: [
+                .product(name: "SwiftUICharts", package: "SwiftUICharts")
+            ],
             path: "."
         )
     ]

@@ -31,11 +31,12 @@ struct EditOrderView: View {
                 Button { 
                     Task {
                         try await ordersViewModel.updateOrder(orderId: orderId, orderState: orderState, orderOrigin: orderOrigin, orderDestination: orderDestination)
-                        try await ordersViewModel.fetchOrders()
+                        try await ordersViewModel.fetchOrdersWithGoods()
                     }
                     dismiss()
                 } label: { 
                     Text("更新订单")
+                    
                 }
                 Button { 
                     dismiss()

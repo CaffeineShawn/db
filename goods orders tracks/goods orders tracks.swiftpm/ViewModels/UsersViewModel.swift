@@ -18,7 +18,7 @@ final class UserViewModel: ObservableObject {
 //        print(users)
     }
     
-    func updateUser(id: Int, name: String, gender: String, phone: String) async throws {
+    func updateUser(id: Int, name: String, gender: String, phone: String, role: Int, password: String) async throws {
         guard let url = URL(string: (UserDefaults.standard.object(forKey: "address") == nil ? BaseURL.base.rawValue : UserDefaults.standard.object(forKey: "address") as! String) + EndPoints.updateUser.rawValue) else {
             throw HttpErrors.badUrl
         }
@@ -27,7 +27,8 @@ final class UserViewModel: ObservableObject {
         map["user_name"] = name
         map["user_gender"] = gender
         map["user_phone"] = phone
-        
+        map["user_role"] = role
+        map["user_password"] = password
         let jsonData = try JSONSerialization.data(withJSONObject: map, options: [])
         try await sendData(url: url, json: jsonData, method: HttpMethods.PUT.rawValue)
     }

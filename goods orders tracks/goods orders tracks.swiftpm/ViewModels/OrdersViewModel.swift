@@ -1,10 +1,13 @@
 import SwiftUI
+import SwiftUICharts
 
 final class OrdersViewModel: ObservableObject {
     @Published var ordersWithGoods: [OrderWithGood] = []
+        
+    
     
     @MainActor
-    func fetchOrders() async throws {
+    func fetchOrdersWithGoods() async throws {
         guard let url = URL(string: (UserDefaults.standard.object(forKey: "address") == nil ? BaseURL.base.rawValue : UserDefaults.standard.object(forKey: "address") as! String)  + EndPoints.getOrdersWithGoods.rawValue ) else {
             throw HttpErrors.badUrl
         }
@@ -55,7 +58,7 @@ final class OrdersViewModel: ObservableObject {
         }
         
         try await sendData(url: url, object: good, method: HttpMethods.PUT.rawValue)
-        try await fetchOrders()
+        try await fetchOrdersWithGoods()
     }
     
     
@@ -65,4 +68,6 @@ final class OrdersViewModel: ObservableObject {
            
         })
     }
+    
+    
 }

@@ -31,9 +31,16 @@ public class GoodController {
         return "error";
     }
 
+    @PutMapping("/updateGood")
+    public String updateGood(@RequestBody Good good){
+        return goodService.updateGoodInfo(good) == 1 ? "ok" : "error";
+    }
+
     @GetMapping("/getGoodAnalyseInfo")
     public String getGoodAnalyseInfo(){
         List<HashMap> lMap = goodService.getGoodAnalyseInfo();
         return JSON.toJSONString(lMap);
     }
+
+
 }

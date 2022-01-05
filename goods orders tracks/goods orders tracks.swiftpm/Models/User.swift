@@ -8,6 +8,7 @@ struct User: Codable {
     let gender: String
     let id: Int
     let name, password, phone: String
+    let role: Int
 
     enum CodingKeys: String, CodingKey {
         case gender = "user_gender"
@@ -15,6 +16,7 @@ struct User: Codable {
         case name = "user_name"
         case password = "user_password"
         case phone = "user_phone"
+        case role = "user_role"
     }
     
 
