@@ -1334,7 +1334,7 @@ export default {
           var goodBarChart = this.$echarts.init(this.$refs.goodBarChart)
           var pieOption = {
             title: {
-              text: '货物分析图表',
+              text: '货物销售额图表',
               subtext: '百分比显示'
             },
             tooltip: {
@@ -1342,7 +1342,7 @@ export default {
               formatter: '{a}：{b} <br/> {c}元 ({d}%) <br/>'
             },
             legend: {
-              bottom: 100,
+              bottom: 70,
               left: 'center',
               data: []
             },
@@ -1366,7 +1366,7 @@ export default {
           }
           var barOption = {
             title: {
-              text: '货物销售额分布图表',
+              text: '货物销售量分布图表',
               x: 'center'
             },
             grid: {
@@ -1398,6 +1398,7 @@ export default {
                 name: '选择类型',
                 type: 'bar',
                 data: [],
+                avoidLabelOverlap: true,
                 itemStyle: {
                   normal: {
                     label: {

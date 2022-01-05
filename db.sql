@@ -11,7 +11,7 @@
  Target Server Version : 80026
  File Encoding         : 65001
 
- Date: 05/01/2022 12:53:05
+ Date: 05/01/2022 13:08:38
 */
 
 SET NAMES utf8mb4;
@@ -32,14 +32,16 @@ CREATE TABLE `good`  (
 -- ----------------------------
 -- Records of good
 -- ----------------------------
-INSERT INTO `good` VALUES (35, 'k380', 0.10, 1201.00);
-INSERT INTO `good` VALUES (36, 'ipad', 0.78, 3560.00);
-INSERT INTO `good` VALUES (37, 'aa', 1.00, 465.00);
-INSERT INTO `good` VALUES (38, '双汇泡面搭档', 0.38, 20.00);
-INSERT INTO `good` VALUES (39, '魔芋爽', 5.00, 1.00);
-INSERT INTO `good` VALUES (40, '随便', 17.00, 0.12);
-INSERT INTO `good` VALUES (41, 'k380', 0.10, 120.00);
-INSERT INTO `good` VALUES (42, '鸡米花', 12.00, 134.00);
+INSERT INTO `good` VALUES (1, '卫龙辣条', 10.00, 200.00);
+INSERT INTO `good` VALUES (2, '飞机模型', 20.00, 1000.00);
+INSERT INTO `good` VALUES (3, '宇航服', 100.00, 1000000.00);
+INSERT INTO `good` VALUES (4, '多肉植物', 1.00, 2.30);
+INSERT INTO `good` VALUES (5, 'iPhone13ProMax', 0.50, 8799.00);
+INSERT INTO `good` VALUES (6, '双汇雪糕', 10.00, 800.00);
+INSERT INTO `good` VALUES (7, '电瓶车', 30.00, 1000.00);
+INSERT INTO `good` VALUES (8, '华为手机', 0.30, 9999.00);
+INSERT INTO `good` VALUES (9, '月球土壤', 1.00, 9999999.00);
+INSERT INTO `good` VALUES (10, '水滴', 10000.00, 1000000.00);
 
 -- ----------------------------
 -- Table structure for order
@@ -62,14 +64,16 @@ CREATE TABLE `order`  (
 -- ----------------------------
 -- Records of order
 -- ----------------------------
-INSERT INTO `order` VALUES (39, 40, 135, '天津', '北京', '待发货');
-INSERT INTO `order` VALUES (40, 39, 136, '北京', '天津', '待发货');
-INSERT INTO `order` VALUES (40, 41, 137, '深圳', '广州', '已发货');
-INSERT INTO `order` VALUES (42, 43, 138, '内蒙古', '广东', '待发货');
-INSERT INTO `order` VALUES (44, 45, 139, '广东', '上海', '待发货');
-INSERT INTO `order` VALUES (46, 47, 140, '广州', '深圳', '待发货');
-INSERT INTO `order` VALUES (48, 49, 141, '上海', '重庆', '待发货');
-INSERT INTO `order` VALUES (50, 40, 142, '天津', '北京', '待发货');
+INSERT INTO `order` VALUES (2, 3, 1, '深圳', '广州', '已发货');
+INSERT INTO `order` VALUES (2, 4, 2, '深圳', '南宁', '已发货');
+INSERT INTO `order` VALUES (2, 5, 3, '深圳', '北京', '待发货');
+INSERT INTO `order` VALUES (3, 4, 4, '天津', '西安', '已送达');
+INSERT INTO `order` VALUES (4, 3, 5, '上海', '苏州', '已送达');
+INSERT INTO `order` VALUES (4, 2, 6, '上海', '哈尔滨', '已送达');
+INSERT INTO `order` VALUES (6, 5, 7, '阿富汗', '北京', '已送达');
+INSERT INTO `order` VALUES (6, 2, 8, '纽约', '深圳', '已发货');
+INSERT INTO `order` VALUES (6, 4, 9, '月球', '广州', '已送达');
+INSERT INTO `order` VALUES (7, 2, 10, '三体星', '纽约', '已发货');
 
 -- ----------------------------
 -- Table structure for order_good
@@ -88,14 +92,16 @@ CREATE TABLE `order_good`  (
 -- ----------------------------
 -- Records of order_good
 -- ----------------------------
-INSERT INTO `order_good` VALUES (36, 136);
-INSERT INTO `order_good` VALUES (37, 137);
-INSERT INTO `order_good` VALUES (38, 138);
-INSERT INTO `order_good` VALUES (39, 139);
-INSERT INTO `order_good` VALUES (39, 140);
-INSERT INTO `order_good` VALUES (40, 141);
-INSERT INTO `order_good` VALUES (41, 135);
-INSERT INTO `order_good` VALUES (42, 142);
+INSERT INTO `order_good` VALUES (1, 1);
+INSERT INTO `order_good` VALUES (2, 2);
+INSERT INTO `order_good` VALUES (3, 3);
+INSERT INTO `order_good` VALUES (4, 4);
+INSERT INTO `order_good` VALUES (5, 5);
+INSERT INTO `order_good` VALUES (6, 6);
+INSERT INTO `order_good` VALUES (7, 7);
+INSERT INTO `order_good` VALUES (8, 8);
+INSERT INTO `order_good` VALUES (9, 9);
+INSERT INTO `order_good` VALUES (10, 10);
 
 -- ----------------------------
 -- Table structure for track
@@ -113,16 +119,54 @@ CREATE TABLE `track`  (
 -- ----------------------------
 -- Records of track
 -- ----------------------------
-INSERT INTO `track` VALUES (135, '天津', '2022-01-02 00:23:44');
-INSERT INTO `track` VALUES (136, '佛山', '2021-12-24 15:49:10');
-INSERT INTO `track` VALUES (136, '北京', '2022-01-02 00:23:45');
-INSERT INTO `track` VALUES (136, '杭州', '2021-12-23 15:49:01');
-INSERT INTO `track` VALUES (137, '深圳', '2022-01-02 00:23:45');
-INSERT INTO `track` VALUES (138, '内蒙古', '2022-01-02 00:23:45');
-INSERT INTO `track` VALUES (139, '广东', '2022-01-02 00:23:45');
-INSERT INTO `track` VALUES (140, '广州', '2022-01-02 00:23:45');
-INSERT INTO `track` VALUES (141, '上海', '2022-01-02 00:23:45');
-INSERT INTO `track` VALUES (142, '天津', '2022-01-02 00:40:02');
+INSERT INTO `track` VALUES (1, '佛山', '2021-12-31 19:28:51');
+INSERT INTO `track` VALUES (1, '深圳', '2021-12-30 21:28:51');
+INSERT INTO `track` VALUES (2, '佛山', '2020-12-10 18:41:32');
+INSERT INTO `track` VALUES (2, '梧州', '2021-07-02 21:31:49');
+INSERT INTO `track` VALUES (2, '深圳', '2019-12-01 21:31:49');
+INSERT INTO `track` VALUES (3, '深圳', '2022-01-01 21:32:55');
+INSERT INTO `track` VALUES (4, '保定', '2021-12-02 21:33:52');
+INSERT INTO `track` VALUES (4, '吕梁', '2021-12-06 21:33:52');
+INSERT INTO `track` VALUES (4, '咸阳', '2021-12-21 21:33:52');
+INSERT INTO `track` VALUES (4, '固原', '2021-12-12 21:33:52');
+INSERT INTO `track` VALUES (4, '天水', '2021-12-14 21:33:52');
+INSERT INTO `track` VALUES (4, '天津', '2021-11-30 21:33:52');
+INSERT INTO `track` VALUES (4, '太原', '2021-12-05 21:33:52');
+INSERT INTO `track` VALUES (4, '安康', '2021-12-18 21:33:52');
+INSERT INTO `track` VALUES (4, '定西', '2021-12-13 21:33:52');
+INSERT INTO `track` VALUES (4, '宝鸡', '2021-12-15 21:33:52');
+INSERT INTO `track` VALUES (4, '平凉', '2021-12-09 21:33:52');
+INSERT INTO `track` VALUES (4, '庆阳', '2021-12-08 21:33:52');
+INSERT INTO `track` VALUES (4, '廊坊', '2021-12-01 21:45:19');
+INSERT INTO `track` VALUES (4, '延安', '2021-12-07 21:33:52');
+INSERT INTO `track` VALUES (4, '汉中', '2021-12-17 21:33:52');
+INSERT INTO `track` VALUES (4, '石家庄', '2021-12-03 21:33:52');
+INSERT INTO `track` VALUES (4, '西安', '2021-12-21 23:33:52');
+INSERT INTO `track` VALUES (4, '阳泉', '2021-12-04 21:33:52');
+INSERT INTO `track` VALUES (5, '上海', '2021-12-31 21:36:33');
+INSERT INTO `track` VALUES (5, '苏州', '2022-01-01 18:36:33');
+INSERT INTO `track` VALUES (6, '上海', '2021-12-25 21:38:41');
+INSERT INTO `track` VALUES (6, '北京', '2021-12-27 21:38:41');
+INSERT INTO `track` VALUES (6, '哈尔滨', '2021-12-30 23:38:41');
+INSERT INTO `track` VALUES (6, '山东', '2021-12-28 21:38:41');
+INSERT INTO `track` VALUES (6, '杭州', '2021-12-26 21:40:08');
+INSERT INTO `track` VALUES (7, '兰州', '2021-12-24 22:58:59');
+INSERT INTO `track` VALUES (7, '北京', '2021-12-27 22:58:59');
+INSERT INTO `track` VALUES (7, '印度', '2021-12-08 23:39:01');
+INSERT INTO `track` VALUES (7, '阿富汗', '2021-12-01 22:58:59');
+INSERT INTO `track` VALUES (8, '上海', '2021-12-12 22:54:44');
+INSERT INTO `track` VALUES (8, '纽约', '2021-12-09 22:54:44');
+INSERT INTO `track` VALUES (9, '上海', '2021-12-18 23:04:31');
+INSERT INTO `track` VALUES (9, '北京', '2021-12-17 23:04:31');
+INSERT INTO `track` VALUES (9, '天宫号', '2021-11-10 22:56:15');
+INSERT INTO `track` VALUES (9, '广州', '2021-12-20 23:04:31');
+INSERT INTO `track` VALUES (9, '月球', '2021-10-01 22:56:15');
+INSERT INTO `track` VALUES (9, '酒泉', '2021-11-12 22:56:15');
+INSERT INTO `track` VALUES (10, '三体星', '2021-01-08 22:57:42');
+INSERT INTO `track` VALUES (10, '仙女系', '2021-07-08 23:01:03');
+INSERT INTO `track` VALUES (10, '冥王星', '2021-12-17 23:01:03');
+INSERT INTO `track` VALUES (10, '太阳系', '2021-10-07 23:01:03');
+INSERT INTO `track` VALUES (10, '银河系', '2021-08-13 23:01:03');
 
 -- ----------------------------
 -- Table structure for user
@@ -141,18 +185,13 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (39, 'sb', '1234', '男', '11111111111', 1);
-INSERT INTO `user` VALUES (40, 'dzq', '1234', '男', '15384390694', 0);
-INSERT INTO `user` VALUES (41, 'as', '1234', '男', '4132141.021', 0);
-INSERT INTO `user` VALUES (42, 'dzq', '1234', '男', '15622291215', 0);
-INSERT INTO `user` VALUES (43, 'xy', '1234', '男', '13539539189', 0);
-INSERT INTO `user` VALUES (44, 'xy', '1234', '男', '15613327512', 0);
-INSERT INTO `user` VALUES (45, 'dzq', '1234', '男', '13312343421', 0);
-INSERT INTO `user` VALUES (46, 'll', '1234', '男', '15384390694', 0);
-INSERT INTO `user` VALUES (47, 'pp', '1234', '男', '15622291215', 0);
-INSERT INTO `user` VALUES (48, 'p', '1234', '男', '15384390694', 0);
-INSERT INTO `user` VALUES (49, 'q', '1234', '男', '15622291215', 0);
-INSERT INTO `user` VALUES (50, '13', '1234', '男', '15622291215', 0);
+INSERT INTO `user` VALUES (1, 'root', '1234', '男', '12323232231', 1);
+INSERT INTO `user` VALUES (2, 'aa', '1234', '男', '13800000000', 0);
+INSERT INTO `user` VALUES (3, 'bb', '1234', '女', '13900000000', 0);
+INSERT INTO `user` VALUES (4, 'cc', '123456', '女', '14000000000', 0);
+INSERT INTO `user` VALUES (5, 'dd', '123456', '男', '14100000000', 0);
+INSERT INTO `user` VALUES (6, 'ee', '1234', '男', '14200000000', 0);
+INSERT INTO `user` VALUES (7, 'santiman', '1234', '男', '19000000000', 0);
 
 -- ----------------------------
 -- View structure for view_goodsale

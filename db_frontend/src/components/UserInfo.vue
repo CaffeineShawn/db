@@ -237,7 +237,7 @@
 }
 .userCostPieChartBox{
   width: 500px;
-  height: 40px;
+  height: 400px;
   margin-top: 15%;
 }
 </style>
