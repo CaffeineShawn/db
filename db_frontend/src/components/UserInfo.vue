@@ -9,6 +9,7 @@
               v-model="queryInfo.information"
               clearable
               @clear="getUserList"
+              style="margin-top:10px;left:10px"
             >
               <el-button
                 slot="append"
@@ -20,7 +21,7 @@
           </el-col>
           <el-col>
             <el-button
-              style="margin-left: 10px"
+              style="margin-left: 20px;margin-top:10px"
               icon="el-icon-document"
               v-if="this.$store.state.currentUser.user_role === 1"
               round
@@ -108,6 +109,7 @@
               >修改信息</el-button
               >
               <el-button
+                v-if="$store.state.currentUser.user_role === 1"
                 type="danger"
                 icon="el-icon-delete"
                 size="mini"
@@ -249,10 +251,11 @@ export default {
       showuser: false,
       isConsignor: true,
       userInfo: {
-        user_id: '',
+        user_name: '',
+        user_id: 0,
         user_password: '',
         user_gender: '',
-        user_pohne: '',
+        user_phone: '',
         user_role: null
       },
       filePathInfo: {
@@ -338,19 +341,23 @@ export default {
       this.userInfo.user_name = user.user_name
       this.userInfo.user_gender = user.user_gender
       this.userInfo.user_password = user.user_password
-      this.userInfo.user_pohne = user.user_pohne
+      this.userInfo.user_phone = user.user_phone
       this.showuser = true
     },
     async update () {
       let userInfo = this.userInfo
+      userInfo.user_id = this.$store.state.currentUser.user_id
+      userInfo.user_role = this.$store.state.currentUser.user_role
       await this.$http
         .put('/user/updateUser', userInfo)
         .then(res => {
           console.log(res)
-
+          this.$store.commit('setuser', {user: userInfo})
           this.$message.success('修改成功')
           this.getUserList()
           this.showuser = false
+          console.log(this.$store.state.currentUser)
+          console.log(userInfo)
         })
         .catch(err => {
           console.log(err)

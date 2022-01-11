@@ -96,8 +96,8 @@ export default {
     return {
       showlogin: true,
       loginform: {
-        username: 'as',
-        password: '123',
+        username: 'root',
+        password: '1234',
         region: ''
       },
       registerform: {

@@ -6,7 +6,7 @@
           <el-col :span="8">
             <!-- 搜索区域 -->
             <el-input
-              style="top: 10px"
+              style="left:10px;top: 10px"
               placeholder="请输入搜索用户姓名或手机号"
               v-model="queryInfo.information"
               clearable
@@ -21,7 +21,7 @@
           </el-col>
           <el-col>
             <el-button
-              style="margin-left: 10px; margin-top: 10px"
+              style="margin-left: 20px; margin-top: 10px"
               icon="el-icon-plus"
               @click="addOrderDialogVisible = true"
               round
@@ -217,6 +217,7 @@
       :visible.sync="orderTrackDialogVisible"
       @close="orderTrackDialogClosed"
       v-if="this.$store.state.currentUser.user_role === 1"
+      width="45%"
     >
       <div class="trackBox" style="display: flex">
         <div class="track">
@@ -265,7 +266,7 @@
             </el-timeline-item>
           </el-timeline>
         </div>
-        <div class="addTrackInfo" style="margin-left: 15%">
+        <div class="addTrackInfo" style="margin-left: 20%">
           <el-card class="addTrackInfoCard" style="text-align: right">
             <span style="float: left">添加物流信息</span>
             <el-divider></el-divider>
