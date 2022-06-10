@@ -1,6 +1,4 @@
-# 数据库课设
-## 开发分支为dev！
-
+# 物流管理系统（前端Vue+后端SpringBoot+客户端SwiftUI）
 
 ## Git工作流程
 
