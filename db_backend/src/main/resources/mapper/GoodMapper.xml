@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.caffeineshawn.db_backend.mapper.GoodMapper">
+
+    <insert id="addGood" useGeneratedKeys="true" keyProperty="good_id"
+            parameterType="com.caffeineshawn.db_backend.entity.Good">
+        insert into good(good_name, good_weight, good_price)
+        values (#{good_name}, #{good_weight}, #{good_price})
+    </insert>
+
+    <select id="findGoodById" resultType="com.caffeineshawn.db_backend.entity.Good">
+        select * from view_orderGood
+        where order_id = #{order_id}
+    </select>
+
+    <update id="updateGoodInfo" parameterType="com.caffeineshawn.db_backend.entity.Good">
+        update good
+        set good_price = #{good_price},
+            good_weight = #{good_weight},
+            good_name = #{good_name}
+        where good_id = #{good_id}
+    </update>
+
+    <delete id="deleteGoodByOrderId">
+        delete from good
+        where good_id = (
+            select good_id from(
+                select good.good_id from good,order_good
+                where order_good.order_id = #{order_id}
+                and order_good.good_id = good.good_id
+            ) as temp
+        )
+    </delete>
+
+    <select id="findGoodByGoodInfo" parameterType="com.caffeineshawn.db_backend.entity.Good"
+        resultType="com.caffeineshawn.db_backend.entity.Good">
+        select * from good
+        where good_name = #{good_name}
+        and good_price = #{good_price}
+        and good_weight = #{good_weight}
+    </select>
+
+    <select id="getGoodAnalyseInfo" resultType="java.util.HashMap">
+        select * from view_goodsale
+    </select>
+</mapper>

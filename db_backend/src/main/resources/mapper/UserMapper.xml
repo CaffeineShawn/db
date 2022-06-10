@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.caffeineshawn.db_backend.mapper.UserMapper">
+
+    <resultMap id="userMap" type="com.caffeineshawn.db_backend.entity.User">
+        <id property="user_id" column="user_id" />
+        <result property="user_name" column="user_name"/>
+        <result property="user_password" column="user_password"/>
+        <result property="user_gender" column="user_gender"/>
+        <result property="user_role" column="user_role"/>
+        <collection property="orderList"
+                    ofType="com.caffeineshawn.db_backend.entity.Order"
+                    column="user_id"
+                    select="com.caffeineshawn.db_backend.mapper.OrderMapper.findUserOrder"/>
+    </resultMap>
+
+    <insert id="addUser" useGeneratedKeys="true" keyProperty="user_id"
+            parameterType="com.caffeineshawn.db_backend.entity.User">
+        insert into user(user_name, user_phone)
+        values (#{user_name}, #{user_phone})
+    </insert>
+
+    <insert id="addAllUser" useGeneratedKeys="true" keyProperty="user_id"
+            parameterType="com.caffeineshawn.db_backend.entity.User">
+        insert into user(user_name, user_password, user_gender, user_phone, user_role)
+        values (#{user_name}, #{user_password},#{user_gender},#{user_phone},#{user_role})
+    </insert>
+
+    <select id="findUserById" resultType="com.caffeineshawn.db_backend.entity.User">
+        select * from user where user_id = #{user_id}
+    </select>
+
+    <select id="findUserByNameAndPhone" resultType="com.caffeineshawn.db_backend.entity.User">
+        select * from user where
+        user_name = #{user_name}
+        and user_phone = #{user_phone}
+    </select>
+
+    <select id="findAllUser" parameterType="com.caffeineshawn.db_backend.entity.QueryInfo"
+            resultType="com.caffeineshawn.db_backend.entity.User">
+        select * from user
+            <if test="information != '' and information != null">
+                where user_name like concat('%', #{information}, '%')
+                or user_phone like concat('%', #{information}, '%')
+                or user_gender like concat('%', #{information}, '%')
+            </if>
+        limit #{page},#{size}
+    </select>
+
+    <select id="findUsers" resultType="com.caffeineshawn.db_backend.entity.User">
+        select * from user
+    </select>
+
+    <select id="findAllUserCount" resultType="java.lang.Integer">
+        select count(*) from user
+        <if test="information != '' and information != null">
+            where user_name like concat('%', #{information}, '%')
+            or user_phone like concat('%', #{information}, '%')
+            or user_gender like concat('%', #{information}, '%')
+        </if>
+    </select>
+
+    <update id="updateUser" parameterType="com.caffeineshawn.db_backend.entity.User">
+        update user
+        <set>
+            <if test="user_name != '' and user_name != null">
+                user_name=#{user_name},
+            </if>
+            <if test="user_password != '' and user_password != null">
+                user_password=#{user_password},
+            </if>
+            <if test="user_gender != '' and user_gender != null">
+                user_gender=#{user_gender},
+            </if>
+            <if test="user_phone != '' and user_phone != null">
+                user_phone=#{user_phone},
+            </if>
+
+                user_role=#{user_role}
+        </set>
+        where user_id=#{user_id}
+    </update>
+
+    <delete id="deleteUser">
+        delete from user where user_id = #{user_id}
+    </delete>
+
+    <select id="findUserByName" resultType="java.lang.Integer">
+        select user_id from user where user_name = #{user_name}
+    </select>
+
+    <select id="confirmPassword" resultType="java.lang.String">
+        select user_password from user where user_id = #{user_id}
+    </select>
+
+    <select id="getUserCostAnalyseInfo" resultType="java.util.HashMap">
+        select *
+        from view_usercost
+        where user_id = #{user_id}
+    </select>
+</mapper>

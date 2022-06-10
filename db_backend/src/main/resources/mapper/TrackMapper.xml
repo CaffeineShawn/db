@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.caffeineshawn.db_backend.mapper.TrackMapper">
+    <select id="findOrderTrack" resultType="com.caffeineshawn.db_backend.entity.Track">
+        select * from track where order_id = #{order_id}
+        order by track.`current_time`
+    </select>
+
+    <insert id="addTrack" useGeneratedKeys="true" keyProperty="order_id" parameterType="com.caffeineshawn.db_backend.entity.Track">
+        insert into track (order_id, current_location, `current_time`)
+        values (#{order_id},#{current_location},#{current_time})
+    </insert>
+
+    <select id="findTrack" parameterType="com.caffeineshawn.db_backend.entity.Track"
+        resultType="com.caffeineshawn.db_backend.entity.Track">
+        select * from track
+        where order_id = #{order_id}
+        and current_location = #{current_location}
+        and `current_time` = #{current_time}
+
+    </select>
+
+    <delete id="deleteTrack">
+        delete from track
+        where order_id = #{order_id}
+    </delete>
+
+    <delete id="deleteSpecificTrack" parameterType="com.caffeineshawn.db_backend.entity.Track">
+        delete from track
+        where order_id = #{order_id}
+        and current_location = #{current_location}
+        and `current_time` = #{current_time}
+    </delete>
+
+    <update id="updateTrack" parameterType="com.caffeineshawn.db_backend.entity.Track">
+        update track
+        set `current_time` = #{newTrack.current_time}, current_location = #{newTrack.current_location}
+        where order_id = #{oldTrack.order_id}
+        and current_location = #{oldTrack.current_location}
+    </update>
+
+    <select id="findAllTrack" resultType="com.caffeineshawn.db_backend.entity.Track">
+        select *
+        from track
+    </select>
+</mapper>
